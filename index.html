@@ -150,7 +150,7 @@
       z-index: 10;
       display: grid;
       place-items: center;
-      background: #030609;
+      background: #030405;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -359,16 +359,13 @@
     }
     enterButton.addEventListener("click", (event) => {
       event.preventDefault();
-      document.body.classList.add("initializing");
+      // Start the page transition immediately, behind the opaque boot screen.
+      document.body.classList.add("initializing", "entered");
       history.replaceState(null, "", "#dashboard");
+      // The landing page and dashboard finish transitioning before boot is removed.
       window.setTimeout(() => {
-        document.body.classList.add("entered");
-        // Keep the initialization layer over the landing-page fade.
-        // Reveal the dashboard only after the transition has completed.
-        window.setTimeout(() => {
-          document.body.classList.remove("initializing");
-        }, 700);
-      }, 850);
+        document.body.classList.remove("initializing");
+      }, 1100);
     });
     window.addEventListener("hashchange", () => {
       if (location.hash !== "#dashboard") document.body.classList.remove("entered");
