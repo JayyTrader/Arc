@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070a0f" />
+  <meta name="description" content="Winter Arc — a personal system for discipline, consistency, and progress." />
+  <title>Winter Arc</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #070a0f;
+      --ice: #e8f3ff;
+      --blue: #a9d7ff;
+      --muted: #718092;
+      --line: rgba(174, 204, 231, .15);
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      min-height: 100svh;
+      overflow: hidden;
+      background: var(--black);
+      color: var(--ice);
+      font-family: "Space Grotesk", sans-serif;
+    }
+    .landing, .dashboard {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      min-height: 100svh;
+      transition: opacity .65s ease, visibility .65s ease;
+    }
+    .landing {
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse 42% 30% at 50% 43%, rgba(150, 198, 239, .18), rgba(105, 157, 204, .075) 38%, transparent 75%),
+        radial-gradient(ellipse 80% 65% at 50% 50%, rgba(25, 42, 60, .18), transparent 72%),
+        #070a0f;
+    }
+    .landing::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: .24;
+      background-image:
+        linear-gradient(rgba(164, 194, 220, .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(164, 194, 220, .055) 1px, transparent 1px);
+      background-size: 76px 76px;
+      mask-image: linear-gradient(to bottom, transparent 4%, #000 45%, transparent 100%);
+    }
+    .landing::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(174, 204, 231, .07);
+      pointer-events: none;
+    }
+    .frame {
+      width: min(100% - 48px, 900px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform: translateY(-1.5vh);
+    }
+    .eyebrow, .enter, .coordinates, .season {
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+    }
+    .eyebrow {
+      color: #91a9bf;
+      font-size: 10px;
+      font-weight: 500;
+      margin: 0 0 37px;
+    }
+    h1 {
+      margin: 0;
+      color: #edf6ff;
+      font-size: clamp(3.2rem, 10.8vw, 7.8rem);
+      line-height: .94;
+      font-weight: 600;
+      letter-spacing: -.085em;
+      text-transform: uppercase;
+      text-shadow: 0 0 22px rgba(183, 220, 255, .18), 0 0 75px rgba(134, 190, 239, .2);
+    }
+    .rule {
+      width: 112px;
+      height: 1px;
+      margin: 35px 0 21px;
+      background: linear-gradient(90deg, transparent, #a9d7ff 50%, transparent);
+      box-shadow: 0 0 16px rgba(169, 215, 255, .55);
+    }
+    .motto {
+      margin: 0;
+      color: #9aaebe;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    .enter {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      min-width: 208px;
+      margin-top: 58px;
+      padding: 16px 22px;
+      border: 1px solid rgba(169, 215, 255, .42);
+      background: rgba(11, 18, 27, .42);
+      color: #dceeff;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .2em;
+      transition: border-color .25s ease, background .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+    .enter:hover, .enter:focus-visible {
+      outline: none;
+      border-color: rgba(197, 228, 255, .9);
+      background: rgba(91, 137, 178, .13);
+      box-shadow: 0 0 28px rgba(127, 187, 238, .13), inset 0 0 20px rgba(127, 187, 238, .05);
+      transform: translateY(-2px);
+    }
+    .arrow { color: #a9d7ff; font-size: 16px; transition: transform .25s ease; }
+    .enter:hover .arrow { transform: translateX(4px); }
+    .coordinates {
+      position: absolute;
+      bottom: 43px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #536273;
+      font-size: 9px;
+      letter-spacing: .17em;
+      white-space: nowrap;
+    }
+    .dashboard {
+      background: #030405;
+      opacity: 0;
+      visibility: hidden;
+    }
+    body.entered .landing { opacity: 0; visibility: hidden; }
+    body.entered .dashboard { opacity: 1; visibility: visible; }
+    @media (max-width: 600px) {
+      .landing::after { inset: 10px; }
+      .eyebrow { margin-bottom: 29px; font-size: 9px; }
+      .rule { margin-top: 29px; }
+      .motto { max-width: 260px; line-height: 1.8; font-size: 9px; }
+      .enter { margin-top: 48px; }
+      .coordinates { bottom: 30px; font-size: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="landing" id="landing">
+    <section class="frame" aria-label="Winter Arc entrance">
+      <p class="eyebrow">Personal Performance System</p>
+      <h1>Winter Arc</h1>
+      <div class="rule" aria-hidden="true"></div>
+      <p class="motto">Discipline &nbsp;·&nbsp; Consistency &nbsp;·&nbsp; Progress</p>
+      <a class="enter" href="#dashboard" id="enterArc">
+        <span>Enter Winter Arc</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </section>
+    <div class="coordinates">W / A — SEASON 01</div>
+  </main>
+  <main class="dashboard" id="dashboard" aria-label="Winter Arc dashboard"></main>
+  <script>
+    const enterButton = document.getElementById("enterArc");
+    enterButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      document.body.classList.add("entered");
+      history.replaceState(null, "", "#dashboard");
+    });
+    window.addEventListener("hashchange", () => {
+      if (location.hash !== "#dashboard") document.body.classList.remove("entered");
+    });
+  </script>
+</body>
+</html>
