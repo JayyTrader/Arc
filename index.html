@@ -324,6 +324,9 @@
     .investing-editor { display:flex; gap:8px; margin-top:12px; }
     .investing-editor input { flex:1; min-width:0; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:10px 12px; font:12px "Space Grotesk",sans-serif; }
     .investing-editor button { border:1px solid rgba(169,215,255,.3); background:rgba(70,115,155,.12); color:#cfe6fb; padding:0 14px; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+    .log-day { width:100%; margin-top:16px; padding:17px 20px; border:1px solid rgba(169,215,255,.42); background:linear-gradient(100deg,rgba(62,105,145,.2),rgba(12,20,29,.7)); color:#dceeff; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; cursor:pointer; transition:background .2s ease,border-color .2s ease; }
+    .log-day:hover { border-color:rgba(197,228,255,.85); background:rgba(91,137,178,.2); }
+    .log-status { min-height:16px; margin-top:10px; color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
     .board-foot { margin-top:18px; color:#586b7e; font:9px/1.7 "IBM Plex Mono",monospace; letter-spacing:.08em; }
     @media(max-width:600px) {
       .dashboard { padding:24px 16px; }
@@ -411,7 +414,9 @@
           </div>
         </div>
       </section>
-      <p class="board-foot">COMPLETIONS ARE SAVED IN THIS BROWSER. SELECT A PREVIOUS DATE TO REVIEW ITS TASK RECORD.</p>
+      <button class="log-day" id="logDay" type="button">Confirm &amp; Log Day →</button>
+      <div class="log-status" id="logStatus" aria-live="polite"></div>
+      <p class="board-foot">COMPLETIONS SAVE AS YOU CHECK THEM OFF. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
     </section>
   </main>
   <div class="boot-screen" id="bootScreen" aria-hidden="true">
@@ -455,6 +460,8 @@
     const investingRow = document.getElementById("investingRow");
     const investingName = document.getElementById("investingName");
     const investingInput = document.getElementById("investingInput");
+    const logDayButton = document.getElementById("logDay");
+    const logStatus = document.getElementById("logStatus");
     const defaultTasks = [
       { id: "wake", name: "Wake up", time: "5:30–6:00 AM" },
       { id: "water", name: "Drink 16 oz of water", time: "Morning" },
@@ -521,9 +528,35 @@
       const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0);
       progressLabel.textContent = complete + " / " + total + " COMPLETE";
       progressFill.style.width = (complete / total * 100) + "%";
+      const latestLog = record.logs && record.logs.length ? record.logs[record.logs.length - 1] : null;
+      logDayButton.textContent = latestLog ? "Update Log & Advance →" : "Confirm & Log Day →";
+      logStatus.textContent = latestLog ? "Previously logged · " + new Date(latestLog.loggedAt).toLocaleString() : "Not yet logged for this date";
     }
     taskDate.value = localDateString();
     taskDate.addEventListener("change", renderTasks);
+    logDayButton.addEventListener("click", () => {
+      const date = taskDate.value;
+      const record = recordFor(date);
+      const total = defaultTasks.length + 1;
+      const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0);
+      const snapshot = {
+        loggedAt: new Date().toISOString(),
+        completed: { ...record.completed },
+        investing: record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : ""),
+        completedCount: complete,
+        totalCount: total,
+        completionPercent: Math.round(complete / total * 100)
+      };
+      if (!record.logs) record.logs = [];
+      record.logs.push(snapshot);
+      record.logged = true;
+      saveTaskData();
+      const next = new Date(date + "T12:00:00");
+      next.setDate(next.getDate() + 1);
+      taskDate.value = localDateString(next);
+      renderTasks();
+      logStatus.textContent = "Previous day archived · " + snapshot.completionPercent + "% complete";
+    });
     investingCheck.addEventListener("change", () => {
       const record = recordFor(taskDate.value);
       record.completed.investing = investingCheck.checked;
