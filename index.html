@@ -413,6 +413,14 @@
             <button id="saveInvesting" type="button">Save task</button>
           </div>
         </div>
+        <div class="panel-header">One-Time Side Tasks</div>
+        <div id="sideTasks"></div>
+        <div style="padding:0 20px 18px">
+          <div class="investing-editor">
+            <input id="sideTaskInput" type="text" maxlength="120" aria-label="One-time side task" placeholder="Add a task for this date only..." />
+            <button id="saveSideTask" type="button">Add task</button>
+          </div>
+        </div>
       </section>
       <button class="log-day" id="logDay" type="button">Confirm &amp; Log Day →</button>
       <div class="log-status" id="logStatus" aria-live="polite"></div>
@@ -462,6 +470,8 @@
     const investingInput = document.getElementById("investingInput");
     const logDayButton = document.getElementById("logDay");
     const logStatus = document.getElementById("logStatus");
+    const sideTasksEl = document.getElementById("sideTasks");
+    const sideTaskInput = document.getElementById("sideTaskInput");
     const defaultTasks = [
       { id: "wake", name: "Wake up", time: "5:30–6:00 AM" },
       { id: "water", name: "Drink 16 oz of water", time: "Morning" },
@@ -484,7 +494,8 @@
       catch (error) { console.warn("Could not save task data in this browser.", error); }
     }
     function recordFor(date) {
-      if (!taskData[date]) taskData[date] = { completed: {}, investing: "" };
+      if (!taskData[date]) taskData[date] = { completed: {}, investing: "", sideTasks: [] };
+      if (!Array.isArray(taskData[date].sideTasks)) taskData[date].sideTasks = [];
       return taskData[date];
     }
     function renderTasks() {
@@ -519,13 +530,42 @@
         row.append(check, copy, tag);
         dailyTasksEl.append(row);
       });
+      sideTasksEl.replaceChildren();
+      record.sideTasks.forEach((task) => {
+        const row = document.createElement("label");
+        row.className = "task-row" + (task.completed ? " done" : "");
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.className = "task-check";
+        check.checked = Boolean(task.completed);
+        check.setAttribute("aria-label", "Complete " + task.name);
+        check.addEventListener("change", () => {
+          task.completed = check.checked;
+          saveTaskData();
+          renderTasks();
+        });
+        const copy = document.createElement("span");
+        copy.className = "task-copy";
+        const name = document.createElement("span");
+        name.className = "task-name";
+        name.textContent = task.name;
+        const time = document.createElement("span");
+        time.className = "task-time";
+        time.textContent = "One-time · " + date;
+        copy.append(name, document.createElement("br"), time);
+        const tag = document.createElement("span");
+        tag.className = "task-tag";
+        tag.textContent = "Side task";
+        row.append(check, copy, tag);
+        sideTasksEl.append(row);
+      });
       const investingText = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
       investingName.textContent = investingText || "Set today's investing priority";
       investingInput.value = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
       investingCheck.checked = Boolean(record.completed.investing);
       investingRow.classList.toggle("done", investingCheck.checked);
-      const total = defaultTasks.length + 1;
-      const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0);
+      const total = defaultTasks.length + 1 + record.sideTasks.length;
+      const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0) + record.sideTasks.filter(task => task.completed).length;
       progressLabel.textContent = complete + " / " + total + " COMPLETE";
       progressFill.style.width = (complete / total * 100) + "%";
       const latestLog = record.logs && record.logs.length ? record.logs[record.logs.length - 1] : null;
@@ -537,12 +577,13 @@
     logDayButton.addEventListener("click", () => {
       const date = taskDate.value;
       const record = recordFor(date);
-      const total = defaultTasks.length + 1;
-      const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0);
+      const total = defaultTasks.length + 1 + record.sideTasks.length;
+      const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0) + record.sideTasks.filter(task => task.completed).length;
       const snapshot = {
         loggedAt: new Date().toISOString(),
         completed: { ...record.completed },
         investing: record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : ""),
+        sideTasks: record.sideTasks.map(task => ({ ...task })),
         completedCount: complete,
         totalCount: total,
         completionPercent: Math.round(complete / total * 100)
@@ -568,6 +609,20 @@
       record.investing = investingInput.value.trim();
       saveTaskData();
       renderTasks();
+    });
+    function addSideTask() {
+      const name = sideTaskInput.value.trim();
+      if (!name) return;
+      const record = recordFor(taskDate.value);
+      record.sideTasks.push({ id: "side-" + Date.now(), name, completed: false });
+      saveTaskData();
+      sideTaskInput.value = "";
+      renderTasks();
+      sideTaskInput.focus();
+    }
+    document.getElementById("saveSideTask").addEventListener("click", addSideTask);
+    sideTaskInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") addSideTask();
     });
     investingInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") document.getElementById("saveInvesting").click();
