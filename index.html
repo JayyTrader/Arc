@@ -63,33 +63,16 @@
     }
     .atmosphere {
       position: absolute;
-      inset: -24%;
+      inset: -20%;
       z-index: -1;
       pointer-events: none;
-      opacity: .82;
+      opacity: .58;
       background:
-        radial-gradient(ellipse 42% 27% at 15% 70%, rgba(77, 139, 198, .105), transparent 72%),
-        radial-gradient(ellipse 38% 30% at 83% 25%, rgba(112, 170, 218, .09), transparent 74%),
-        radial-gradient(ellipse 48% 27% at 54% 91%, rgba(70, 120, 168, .085), transparent 76%),
-        radial-gradient(ellipse 26% 19% at 48% 16%, rgba(145, 190, 228, .055), transparent 76%);
-      filter: blur(42px);
-      animation: haze-drift 30s ease-in-out infinite alternate;
-    }
-    .atmosphere::before,
-    .atmosphere::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 34% 18% at 32% 38%, rgba(115, 168, 210, .065), transparent 75%),
-        radial-gradient(ellipse 40% 22% at 76% 76%, rgba(83, 143, 196, .07), transparent 76%);
-      filter: blur(48px);
-    }
-    .atmosphere::before { animation: haze-layer-one 38s ease-in-out infinite alternate; }
-    .atmosphere::after {
-      opacity: .7;
-      transform: scaleX(-1);
-      animation: haze-layer-two 46s ease-in-out infinite alternate;
+        radial-gradient(ellipse 34% 20% at 18% 72%, rgba(70, 128, 184, .07), transparent 72%),
+        radial-gradient(ellipse 28% 24% at 82% 24%, rgba(112, 170, 218, .06), transparent 74%),
+        radial-gradient(ellipse 44% 22% at 52% 88%, rgba(70, 120, 168, .05), transparent 76%);
+      filter: blur(38px);
+      animation: haze-drift 34s ease-in-out infinite alternate;
     }
     .particles {
       position: absolute;
