@@ -362,8 +362,12 @@
       document.body.classList.add("initializing");
       history.replaceState(null, "", "#dashboard");
       window.setTimeout(() => {
-        document.body.classList.remove("initializing");
         document.body.classList.add("entered");
+        // Keep the initialization layer over the landing-page fade.
+        // Reveal the dashboard only after the transition has completed.
+        window.setTimeout(() => {
+          document.body.classList.remove("initializing");
+        }, 700);
       }, 850);
     });
     window.addEventListener("hashchange", () => {
