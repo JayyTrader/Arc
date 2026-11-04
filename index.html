@@ -289,7 +289,50 @@
     }
     body.entered .landing { opacity: 0; visibility: hidden; }
     body.entered .dashboard { opacity: 1; visibility: visible; }
-    @media (max-width: 600px) {
+
+    body { overflow: hidden; }
+    .dashboard {
+      display: block;
+      overflow-y: auto;
+      padding: clamp(24px, 5vw, 64px);
+      background:
+        radial-gradient(ellipse 55% 40% at 50% 0%, rgba(43, 76, 105, .12), transparent 75%),
+        #030405;
+    }
+    .board-wrap { width: min(100%, 860px); margin: 0 auto; padding: 10px 0 56px; }
+    .board-topline { display:flex; justify-content:space-between; gap:16px; color:#64788c; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
+    .board-heading { margin:44px 0 8px; font-size:clamp(2rem,5vw,3.4rem); letter-spacing:-.06em; font-weight:600; color:#e8f3ff; }
+    .board-subtitle { margin:0; color:#8192a3; font:11px "IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
+    .board-controls { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:38px 0 14px; flex-wrap:wrap; }
+    .date-control { display:flex; align-items:center; gap:12px; color:#8da0b3; font:10px "IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
+    .date-control input { color:#dceeff; background:#0a1017; border:1px solid rgba(169,215,255,.2); padding:10px 12px; font:12px "IBM Plex Mono",monospace; color-scheme:dark; }
+    .progress-label { color:#8295a8; font:10px "IBM Plex Mono",monospace; letter-spacing:.1em; }
+    .progress-track { height:3px; margin:14px 0 26px; background:rgba(169,215,255,.1); overflow:hidden; }
+    .progress-fill { height:100%; width:0; background:#9ed1ff; box-shadow:0 0 12px rgba(126,190,245,.6); transition:width .25s ease; }
+    .task-panel { border:1px solid rgba(174,204,231,.13); background:rgba(9,14,20,.76); }
+    .panel-header { padding:17px 20px; border-bottom:1px solid rgba(174,204,231,.11); color:#8da6bd; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
+    .task-row { display:grid; grid-template-columns:22px minmax(0,1fr) auto; align-items:center; gap:14px; min-height:76px; padding:14px 20px; border-bottom:1px solid rgba(174,204,231,.08); }
+    .task-row:last-child { border-bottom:0; }
+    .task-check { appearance:none; width:17px; height:17px; margin:0; border:1px solid #60778d; background:transparent; cursor:pointer; display:grid; place-items:center; }
+    .task-check:checked { background:#9ed1ff; border-color:#9ed1ff; }
+    .task-check:checked::after { content:"✓"; color:#06101a; font: bold 12px sans-serif; }
+    .task-copy { min-width:0; }
+    .task-name { color:#dce8f4; font-size:14px; line-height:1.4; }
+    .task-time { margin-top:5px; color:#708397; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .task-row.done .task-name { color:#718394; text-decoration:line-through; }
+    .task-tag { color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+    .investing-editor { display:flex; gap:8px; margin-top:12px; }
+    .investing-editor input { flex:1; min-width:0; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:10px 12px; font:12px "Space Grotesk",sans-serif; }
+    .investing-editor button { border:1px solid rgba(169,215,255,.3); background:rgba(70,115,155,.12); color:#cfe6fb; padding:0 14px; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+    .board-foot { margin-top:18px; color:#586b7e; font:9px/1.7 "IBM Plex Mono",monospace; letter-spacing:.08em; }
+    @media(max-width:600px) {
+      .dashboard { padding:24px 16px; }
+      .board-heading { margin-top:36px; }
+      .task-row { padding:13px 14px; gap:10px; }
+      .task-tag { font-size:8px; }
+      .board-topline { font-size:8px; }
+    }
+\n    @media (max-width: 600px) {
       .landing::after { inset: 10px; }
       .system-readout { top: 27px; font-size: 7px; gap: 5px; }
       .system-readout.left { left: 27px; }
@@ -339,7 +382,38 @@
     </section>
     <div class="coordinates">W / A — SEASON 01</div>
   </main>
-  <main class="dashboard" id="dashboard" aria-label="Winter Arc dashboard"></main>
+  <main class="dashboard" id="dashboard" aria-label="Winter Arc dashboard">
+    <section class="board-wrap">
+      <div class="board-topline"><span>Winter Arc / Season 01</span><span>Daily Operations</span></div>
+      <h2 class="board-heading">Daily Task Board</h2>
+      <p class="board-subtitle">Execute the fundamentals. Record the work.</p>
+      <div class="board-controls">
+        <label class="date-control">Active date <input type="date" id="taskDate" /></label>
+        <span class="progress-label" id="progressLabel">0 / 5 COMPLETE</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <section class="task-panel" aria-label="Daily tasks">
+        <div class="panel-header">Daily Foundation</div>
+        <div id="dailyTasks"></div>
+        <div class="panel-header">Investing Priority</div>
+        <div class="task-row" id="investingRow">
+          <input class="task-check" type="checkbox" id="investingCheck" aria-label="Complete investing priority" />
+          <div class="task-copy">
+            <div class="task-name" id="investingName">Set today's investing priority</div>
+            <div class="task-time">Research / Strategy / Execution</div>
+          </div>
+          <span class="task-tag">Daily</span>
+        </div>
+        <div style="padding:0 20px 18px">
+          <div class="investing-editor">
+            <input id="investingInput" type="text" maxlength="120" aria-label="Investing priority" placeholder="Define today's investing task..." />
+            <button id="saveInvesting" type="button">Save task</button>
+          </div>
+        </div>
+      </section>
+      <p class="board-foot">COMPLETIONS ARE SAVED IN THIS BROWSER. SELECT A PREVIOUS DATE TO REVIEW ITS TASK RECORD.</p>
+    </section>
+  </main>
   <div class="boot-screen" id="bootScreen" aria-hidden="true">
     <div class="boot-copy">Initializing Winter Arc</div>
   </div>
@@ -370,6 +444,102 @@
     window.addEventListener("hashchange", () => {
       if (location.hash !== "#dashboard") document.body.classList.remove("entered");
     });
+
+    // Daily task records are stored locally by date; history is never reset.
+    const TASK_STORAGE_KEY = "winterArcDailyTasksV1";
+    const taskDate = document.getElementById("taskDate");
+    const dailyTasksEl = document.getElementById("dailyTasks");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressFill = document.getElementById("progressFill");
+    const investingCheck = document.getElementById("investingCheck");
+    const investingRow = document.getElementById("investingRow");
+    const investingName = document.getElementById("investingName");
+    const investingInput = document.getElementById("investingInput");
+    const defaultTasks = [
+      { id: "wake", name: "Wake up", time: "5:30–6:00 AM" },
+      { id: "water", name: "Drink 16 oz of water", time: "Morning" },
+      { id: "spending", name: "Update spending tracker", time: "Daily finance check" },
+      { id: "review", name: "Complete end-of-day review", time: "Evening closeout" }
+    ];
+    function localDateString(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + d;
+    }
+    function readTaskData() {
+      try { return JSON.parse(localStorage.getItem(TASK_STORAGE_KEY) || "{}"); }
+      catch (error) { return {}; }
+    }
+    let taskData = readTaskData();
+    function saveTaskData() {
+      try { localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(taskData)); }
+      catch (error) { console.warn("Could not save task data in this browser.", error); }
+    }
+    function recordFor(date) {
+      if (!taskData[date]) taskData[date] = { completed: {}, investing: "" };
+      return taskData[date];
+    }
+    function renderTasks() {
+      const date = taskDate.value;
+      const record = recordFor(date);
+      dailyTasksEl.replaceChildren();
+      defaultTasks.forEach((task) => {
+        const row = document.createElement("label");
+        row.className = "task-row" + (record.completed[task.id] ? " done" : "");
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.className = "task-check";
+        check.checked = Boolean(record.completed[task.id]);
+        check.setAttribute("aria-label", "Complete " + task.name);
+        check.addEventListener("change", () => {
+          record.completed[task.id] = check.checked;
+          saveTaskData();
+          renderTasks();
+        });
+        const copy = document.createElement("span");
+        copy.className = "task-copy";
+        const name = document.createElement("span");
+        name.className = "task-name";
+        name.textContent = task.name;
+        const time = document.createElement("span");
+        time.className = "task-time";
+        time.textContent = task.time;
+        copy.append(name, document.createElement("br"), time);
+        const tag = document.createElement("span");
+        tag.className = "task-tag";
+        tag.textContent = "Daily";
+        row.append(check, copy, tag);
+        dailyTasksEl.append(row);
+      });
+      const investingText = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
+      investingName.textContent = investingText || "Set today's investing priority";
+      investingInput.value = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
+      investingCheck.checked = Boolean(record.completed.investing);
+      investingRow.classList.toggle("done", investingCheck.checked);
+      const total = defaultTasks.length + 1;
+      const complete = defaultTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0);
+      progressLabel.textContent = complete + " / " + total + " COMPLETE";
+      progressFill.style.width = (complete / total * 100) + "%";
+    }
+    taskDate.value = localDateString();
+    taskDate.addEventListener("change", renderTasks);
+    investingCheck.addEventListener("change", () => {
+      const record = recordFor(taskDate.value);
+      record.completed.investing = investingCheck.checked;
+      saveTaskData();
+      renderTasks();
+    });
+    document.getElementById("saveInvesting").addEventListener("click", () => {
+      const record = recordFor(taskDate.value);
+      record.investing = investingInput.value.trim();
+      saveTaskData();
+      renderTasks();
+    });
+    investingInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") document.getElementById("saveInvesting").click();
+    });
+    renderTasks();
   </script>
 </body>
 </html>
