@@ -582,6 +582,168 @@
       .command-grid > .board-wrap { margin-top:34px; }
     }
 
+  
+    /* Orbital campaign map + compact daily sidebar */
+    .dashboard { isolation:isolate; }
+    .dashboard::before {
+      content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.34;
+      background-image:
+        radial-gradient(1.5px 1.5px at 8% 19%,rgba(215,237,255,.8) 50%,transparent 100%),
+        radial-gradient(1px 1px at 19% 63%,rgba(173,213,248,.7) 50%,transparent 100%),
+        radial-gradient(1.5px 1.5px at 31% 28%,rgba(205,230,255,.65) 50%,transparent 100%),
+        radial-gradient(1px 1px at 43% 82%,rgba(173,213,248,.65) 50%,transparent 100%),
+        radial-gradient(1.2px 1.2px at 56% 16%,rgba(220,239,255,.72) 50%,transparent 100%),
+        radial-gradient(1px 1px at 68% 58%,rgba(173,213,248,.68) 50%,transparent 100%),
+        radial-gradient(1.5px 1.5px at 79% 31%,rgba(205,230,255,.7) 50%,transparent 100%),
+        radial-gradient(1px 1px at 91% 76%,rgba(173,213,248,.62) 50%,transparent 100%),
+        radial-gradient(1px 1px at 88% 12%,rgba(205,230,255,.55) 50%,transparent 100%),
+        radial-gradient(1px 1px at 13% 88%,rgba(173,213,248,.58) 50%,transparent 100%);
+      animation:dashboard-drift 26s ease-in-out infinite alternate;
+    }
+    @keyframes dashboard-drift {
+      from { transform:translate3d(-4px,-8px,0); opacity:.2; }
+      to { transform:translate3d(5px,10px,0); opacity:.48; }
+    }
+    .command-center {
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 270px;
+      grid-template-rows:auto auto auto auto auto auto;
+      column-gap:clamp(28px,4vw,62px);
+      row-gap:0;
+      align-items:start;
+    }
+    .command-center > .board-topline { grid-column:1/-1; grid-row:1; }
+    .command-center > .performance-strip {
+      grid-column:1/-1; grid-row:2;
+      margin:0 0 30px;
+      max-width:620px;
+      border:0;
+      border-bottom:1px solid rgba(174,204,231,.12);
+      background:transparent;
+    }
+    .performance-card { padding:10px 18px 12px; }
+    .performance-value { font-size:21px; }
+    .performance-label,.performance-count { font-size:9px; }
+    .mission-card {
+      grid-column:1; grid-row:3;
+      width:min(100%,470px);
+      min-height:0;
+      aspect-ratio:1.85 / 1;
+      justify-self:center;
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      text-align:center;
+      padding:35px;
+      border:1px solid rgba(169,215,255,.28);
+      border-radius:48% 52% 45% 55% / 52% 44% 56% 48%;
+      background:
+        radial-gradient(ellipse at 50% 42%,rgba(44,81,110,.5),rgba(13,25,36,.9) 65%,rgba(6,11,16,.94));
+      box-shadow:0 0 70px rgba(74,139,190,.08),inset 0 0 45px rgba(105,174,225,.07);
+    }
+    .mission-card::after {
+      content:""; position:absolute; inset:12px;
+      border:1px solid rgba(169,215,255,.09);
+      border-radius:inherit; pointer-events:none;
+    }
+    .mission-card > * { position:relative; z-index:1; }
+    .mission-title { font-size:clamp(27px,3.2vw,42px); margin:10px 0 7px; }
+    .mission-copy { font-size:13px; }
+    .mission-progress { width:100%; justify-content:center; gap:18px; margin-top:17px; }
+    .mission-track { width:85%; margin-top:7px; }
+    .branch-connect {
+      grid-column:1; grid-row:4;
+      position:relative; height:68px; padding:0;
+      display:flex; justify-content:center; align-items:flex-end;
+      color:#7895ad; font:9px "IBM Plex Mono",monospace; letter-spacing:.16em;
+    }
+    .branch-connect::before {
+      content:""; position:absolute; top:0; left:50%; height:37px;
+      border-left:1px solid rgba(139,198,240,.38);
+    }
+    .branch-grid {
+      grid-column:1; grid-row:5;
+      position:relative; gap:clamp(18px,3vw,34px);
+    }
+    .branch-grid::before {
+      content:""; position:absolute; top:-22px; left:25%; right:25%;
+      border-top:1px solid rgba(139,198,240,.34);
+    }
+    .branch-card {
+      position:relative; min-height:180px; padding:22px 20px;
+      border:1px solid rgba(169,215,255,.18);
+      border-radius:44% 56% 51% 49% / 48% 43% 57% 52%;
+      background:radial-gradient(ellipse at 50% 40%,rgba(24,47,65,.74),rgba(7,13,19,.92) 74%);
+      box-shadow:inset 0 0 28px rgba(107,173,222,.045);
+    }
+    .branch-card::before {
+      content:""; position:absolute; left:50%; top:-23px; height:22px;
+      border-left:1px solid rgba(139,198,240,.34);
+    }
+    .branch-card:hover,.branch-card.active {
+      border-color:rgba(130,205,255,.68);
+      background:radial-gradient(ellipse at 50% 40%,rgba(35,68,91,.82),rgba(7,13,19,.95) 76%);
+      transform:translateY(-3px);
+    }
+    .branch-card.active { box-shadow:0 0 34px rgba(83,164,222,.1),inset 0 0 30px rgba(107,173,222,.08); }
+    .branch-name { text-align:center; }
+    .branch-index,.branch-description,.branch-meta { text-align:center; justify-content:center; }
+    .branch-meta { gap:12px; }
+    .sector-detail { grid-column:1; grid-row:6; margin-top:30px; }
+    .command-grid > .board-wrap {
+      grid-column:2; grid-row:3 / span 4;
+      align-self:start; min-width:0;
+      padding:0 0 0 20px;
+      border-left:1px solid rgba(174,204,231,.13);
+    }
+    .board-wrap .board-topline { margin:0 0 18px; font-size:9px; }
+    .board-heading { font-size:23px; letter-spacing:-.055em; }
+    .board-subtitle { font-size:11px; }
+    .board-controls { display:grid; gap:10px; margin:18px 0 10px; }
+    .date-control { justify-content:space-between; font-size:9px; }
+    .date-control input { max-width:145px; padding:8px; font-size:10px; }
+    .progress-label { font-size:9px; }
+    .progress-track { margin:10px 0 17px; }
+    .task-panel { border-top:1px solid rgba(174,204,231,.15); }
+    .panel-header { padding:15px 0 8px; font-size:9px; }
+    .task-row,.side-task-row { min-height:52px; padding:8px 0; grid-template-columns:17px minmax(0,1fr) auto; gap:8px; }
+    .task-check { width:14px; height:14px; }
+    .task-name { font-size:12px; }
+    .task-time { font-size:9px; }
+    .task-tag { font-size:8px; }
+    .investing-editor { gap:5px; }
+    .investing-editor input { padding:9px; font-size:11px; }
+    .investing-editor button { padding:0 8px; font-size:8px; }
+    .rating-input-wrap { padding:10px 0; gap:7px; }
+    .rating-input-wrap label,.rating-hint { font-size:9px; }
+    .rating-input-wrap input { width:48px; padding:6px; font-size:12px; }
+    .log-day { padding:12px 10px; font-size:9px; }
+    .log-status,.board-foot { font-size:9px; }
+    @media(max-width:980px) {
+      .command-center { display:block; }
+      .command-center > .performance-strip { max-width:none; margin-bottom:30px; }
+      .command-grid { display:grid; }
+      .command-grid > .map-column { display:block; }
+      .mission-card { margin:0 auto; }
+      .command-grid > .board-wrap { border-left:0; border-top:1px solid rgba(174,204,231,.16); padding:28px 0 0; margin-top:35px; }
+      .board-heading { font-size:30px; }
+      .task-row,.side-task-row { min-height:62px; padding:12px 2px; grid-template-columns:20px minmax(0,1fr) auto; }
+      .task-name { font-size:14px; }
+      .task-time { font-size:10px; }
+      .panel-header { padding:18px 0 10px; font-size:10px; }
+    }
+    @media(max-width:600px) {
+      .mission-card { width:min(100%,390px); aspect-ratio:1.35/1; padding:22px; }
+      .mission-title { font-size:29px; }
+      .mission-copy { font-size:12px; }
+      .branch-grid { gap:10px; }
+      .branch-card { min-height:165px; padding:16px 10px; }
+      .branch-name { font-size:16px; }
+      .branch-description { font-size:10px; }
+      .branch-meta { flex-direction:column; gap:5px; font-size:8px; }
+      .performance-card { padding:10px 7px; }
+      .performance-value { font-size:18px; }
+      .performance-label,.performance-count { font-size:7px; }
+    }
+
   </style>
 </head>
 <body>
