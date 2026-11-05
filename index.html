@@ -412,6 +412,80 @@
       .cursor-glow { display: none; }
       .boot-screen { display: none; }
     }
+
+    /* Readability pass: flatter surfaces, calmer hierarchy, more breathing room */
+    .dashboard { padding:clamp(22px,4vw,52px); }
+    .command-center { width:min(100%,1440px); padding:4px 0 64px; }
+    .board-topline { color:#8294a6; font-size:10px; letter-spacing:.12em; margin-bottom:30px; }
+    .performance-strip { gap:0; margin:0 0 38px; border-top:1px solid rgba(174,204,231,.13); border-bottom:1px solid rgba(174,204,231,.13); background:rgba(9,14,20,.25); }
+    .performance-card { border:0; border-right:1px solid rgba(174,204,231,.1); background:transparent; padding:16px 20px; }
+    .performance-card:last-child { border-right:0; }
+    .performance-label { font-size:10px; letter-spacing:.1em; color:#91a2b3; }
+    .performance-value { font-size:26px; margin-top:5px; }
+    .performance-count { font-size:10px; color:#8293a3; }
+    .command-grid { grid-template-columns:minmax(0,1.35fr) minmax(360px,.85fr); gap:clamp(28px,4vw,58px); }
+    .mission-card { border:0; border-top:1px solid rgba(169,215,255,.36); border-bottom:1px solid rgba(169,215,255,.2); background:linear-gradient(100deg,rgba(18,31,43,.55),rgba(8,13,19,.24)); padding:28px 24px 24px; text-align:left; }
+    .mission-title { font-size:clamp(28px,3.4vw,42px); margin:10px 0 8px; }
+    .mission-copy { margin:0; max-width:unset; font:13px/1.6 "Space Grotesk",sans-serif; color:#a6b5c3; }
+    .mission-progress { margin-top:24px; font-size:10px; }
+    .branch-connect { text-align:left; padding:24px 0 12px; color:#8298ab; font-size:10px; }
+    .branch-grid { gap:28px; }
+    .branch-card { border:0; border-top:1px solid rgba(174,204,231,.2); border-bottom:1px solid rgba(174,204,231,.12); background:rgba(9,14,20,.22); padding:17px 4px 15px; }
+    .branch-card:hover,.branch-card.active { border-color:rgba(130,205,255,.55); background:rgba(17,32,45,.25); transform:none; }
+    .branch-card.active { box-shadow:none; }
+    .branch-index { font-size:10px; color:#8298ab; }
+    .branch-name { font-size:20px; margin:9px 0 5px; }
+    .branch-description { min-height:0; font:12px/1.55 "Space Grotesk",sans-serif; color:#a0afbd; }
+    .branch-meta { margin-top:12px; font-size:10px; }
+    .sector-detail { margin-top:26px; border:0; border-top:1px solid rgba(174,204,231,.17); background:transparent; }
+    .sector-detail-head { padding:19px 0 14px; border-bottom:0; }
+    .sector-detail-title { font-size:23px; margin-top:7px; }
+    .sector-detail-progress { font-size:21px; }
+    .goal-card { padding:20px 0; border-bottom:1px solid rgba(174,204,231,.13); }
+    .goal-title { font-size:15px; line-height:1.4; color:#e2edf7; }
+    .goal-description { margin-top:7px; font:12px/1.65 "Space Grotesk",sans-serif; color:#9aaaba; }
+    .milestone-list { gap:12px; margin-top:15px; }
+    .milestone { gap:11px; color:#c0ccd7; font:12px/1.5 "Space Grotesk",sans-serif; }
+    .milestone input { width:15px; height:15px; accent-color:#8bd4ff; }
+    .milestone.done span { color:#7f91a2; }
+    .goal-progress { margin-top:13px; color:#8298ab; font-size:10px; letter-spacing:.08em; }
+    .board-wrap { padding-top:0; }
+    .board-heading { font-size:clamp(25px,3vw,32px); margin:0 0 7px; }
+    .board-subtitle { font:12px/1.5 "Space Grotesk",sans-serif; letter-spacing:.02em; text-transform:none; color:#9baab8; }
+    .board-controls { margin:27px 0 12px; }
+    .date-control { font-size:10px; letter-spacing:.08em; }
+    .progress-label { font-size:10px; }
+    .task-panel { border:0; background:transparent; }
+    .panel-header { padding:18px 0 11px; border-bottom:1px solid rgba(174,204,231,.16); color:#9bb0c3; font-size:10px; letter-spacing:.12em; }
+    .task-row,.side-task-row { min-height:65px; padding:12px 2px; border-bottom:1px solid rgba(174,204,231,.09); gap:12px; }
+    .task-name { font-size:14px; line-height:1.5; color:#e0e9f1; }
+    .task-time { font-size:10px; letter-spacing:.04em; text-transform:none; color:#8b9bab; }
+    .task-tag { font-size:9px; color:#8b9eaf; }
+    .investing-editor { margin-top:13px; }
+    .investing-editor input { padding:12px; font:13px "Space Grotesk",sans-serif; }
+    .investing-editor button { padding:0 13px; font-size:10px; }
+    .rating-input-wrap { padding:15px 0; border-bottom:1px solid rgba(174,204,231,.09); }
+    .rating-input-wrap label { font:11px "Space Grotesk",sans-serif; letter-spacing:.02em; text-transform:none; color:#c1ced9; }
+    .rating-input-wrap input { border:1px solid rgba(169,215,255,.25); font-size:14px; }
+    .rating-hint { font:10px "Space Grotesk",sans-serif; color:#8799aa; }
+    .log-day { padding:15px 18px; font-size:10px; letter-spacing:.1em; }
+    .log-status,.board-foot { font-size:10px; line-height:1.65; letter-spacing:.04em; }
+    @media(max-width:900px) { .command-grid { grid-template-columns:1fr; gap:42px; } }
+    @media(max-width:600px) {
+      .dashboard { padding:22px 18px; }
+      .performance-card { padding:13px 10px; }
+      .performance-value { font-size:21px; }
+      .performance-label,.performance-count { font-size:8px; }
+      .branch-grid { gap:18px; }
+      .branch-card { padding:15px 2px; }
+      .branch-name { font-size:17px; }
+      .branch-description { font-size:11px; }
+      .task-row,.side-task-row { grid-template-columns:20px minmax(0,1fr) auto; }
+      .side-task-row .side-task-delete { grid-column:2 / 4; justify-self:start; }
+      .rating-input-wrap { flex-wrap:wrap; }
+      .rating-hint { flex-basis:100%; padding-left:0; }
+    }
+
   </style>
 </head>
 <body>
