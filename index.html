@@ -321,7 +321,7 @@
     .task-time { margin-top:5px; color:#708397; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
     .task-row.done .task-name { color:#718394; text-decoration:line-through; }
     .task-tag { color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
-    .side-task-delete { border:1px solid rgba(190,112,112,.28); background:transparent; color:#a98282; padding:7px 9px; font:9px "IBM Plex Mono",monospace; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    .side-task-delete { box-sizing:border-box; display:inline-flex; align-items:center; justify-content:center; width:64px; min-width:64px; white-space:nowrap; flex-shrink:0; border:1px solid rgba(190,112,112,.42); background:rgba(120,45,45,.08); color:#c28e8e; padding:7px 8px; font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
     .side-task-delete:hover { border-color:rgba(230,140,140,.75); color:#e6b3b3; background:rgba(120,45,45,.12); }
     .side-task-row { display:grid; grid-template-columns:22px minmax(0,1fr) auto auto; align-items:center; gap:12px; min-height:76px; padding:14px 20px; border-bottom:1px solid rgba(174,204,231,.08); }
     .investing-editor { display:flex; gap:8px; margin-top:12px; }
@@ -744,6 +744,159 @@
       .performance-label,.performance-count { font-size:7px; }
     }
 
+
+    /* WINTER ARC — minimalist focus interface */
+    .dashboard {
+      isolation:isolate; overflow-y:auto; padding:0 clamp(18px,3.2vw,52px) 36px;
+      background:
+        linear-gradient(180deg,rgba(3,8,14,.96) 0%,rgba(4,10,17,.78) 27%,rgba(4,9,15,.58) 64%,#03070c 100%),
+        radial-gradient(ellipse 65% 44% at 52% 57%,rgba(90,147,190,.13),transparent 75%),
+        #03070c;
+    }
+    .dashboard::before {
+      content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.95;
+      background:
+        linear-gradient(180deg,rgba(2,7,12,.04) 0%,rgba(2,7,12,.1) 42%,rgba(2,7,12,.8) 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3ClinearGradient id='sky' x2='0' y2='1'%3E%3Cstop stop-color='%230b1a29'/%3E%3Cstop offset='.62' stop-color='%233b5367'/%3E%3Cstop offset='1' stop-color='%230c1924'/%3E%3C/linearGradient%3E%3CradialGradient id='glow'%3E%3Cstop stop-color='%23d8e9f5' stop-opacity='.7'/%3E%3Cstop offset='1' stop-color='%23a8c8df' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='snow' x2='0' y2='1'%3E%3Cstop stop-color='%239bb3c5'/%3E%3Cstop offset='1' stop-color='%230b1722'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1600' height='1000' fill='url(%23sky)'/%3E%3Cellipse cx='1080' cy='580' rx='420' ry='190' fill='url(%23glow)' opacity='.55'/%3E%3Cpath d='M0 600 180 420 285 520 440 330 590 545 770 365 930 540 1110 300 1290 530 1450 370 1600 550V1000H0Z' fill='%23132230'/%3E%3Cpath d='m0 600 180-180 90 90 115-135 55 145 90 25 60-105 90 130 90-205 85 130 110 45 135-240 95 180 85-105 110 160v285H0Z' fill='url(%23snow)' opacity='.66'/%3E%3Cpath d='M0 700 170 570 300 640 470 500 610 690 780 530 920 680 1090 510 1260 680 1430 540 1600 670V1000H0Z' fill='%230a1722'/%3E%3Cpath d='M0 760 220 650 390 740 570 610 760 790 930 630 1120 760 1320 620 1490 740 1600 680V1000H0Z' fill='%23050c13'/%3E%3Cpath d='M0 760 220 650 390 740 570 610 760 790 930 630 1120 760 1320 620 1490 740' fill='none' stroke='%2396b7cf' stroke-opacity='.2' stroke-width='3'/%3E%3C/svg%3E");
+      background-size:cover; background-position:center 54%;
+    }
+    .command-center {
+      width:min(100%,1640px); min-height:100vh; margin:0 auto; padding:0 0 28px;
+      display:grid; grid-template-columns:150px minmax(0,1fr) 270px;
+      grid-template-rows:auto 1fr; column-gap:clamp(24px,3vw,48px); align-items:stretch;
+    }
+    .command-center > .board-topline { display:none; }
+    .arc-header {
+      grid-column:1/-1; display:grid; grid-template-columns:1fr minmax(320px,440px) 180px;
+      align-items:center; gap:30px; min-height:104px; border-bottom:1px solid rgba(190,216,237,.13);
+    }
+    .arc-brand { display:flex; align-items:center; gap:20px; }
+    .arc-mark { color:#bdeaff; font-size:39px; line-height:1; text-shadow:0 0 22px rgba(111,202,255,.45); }
+    .arc-wordmark { color:#edf6ff; font-size:19px; letter-spacing:.38em; font-weight:500; white-space:nowrap; }
+    .arc-submark { margin-top:7px; color:#8197aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.32em; }
+    .arc-header-motto { justify-self:end; color:#9aafc1; font:9px/2 "IBM Plex Mono",monospace; letter-spacing:.24em; text-align:left; }
+    .performance-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin:0; border:0; border-left:1px solid rgba(190,216,237,.16); background:transparent; }
+    .performance-card { padding:8px 17px; border:0; border-right:1px solid rgba(190,216,237,.12); background:transparent; }
+    .performance-label { color:#8ea5b8; font:8px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
+    .performance-value { margin-top:6px; color:#e6f4ff; font:500 22px "Space Grotesk",sans-serif; }
+    .performance-count { margin-top:3px; color:#7890a5; font:8px "IBM Plex Mono",monospace; }
+    .arc-nav { grid-column:1; grid-row:2; padding-top:65px; display:flex; flex-direction:column; gap:29px; }
+    .arc-nav a { color:#9aafc0; text-decoration:none; font:9px "IBM Plex Mono",monospace; letter-spacing:.2em; padding:8px 0 8px 14px; border-left:1px solid rgba(175,207,233,.2); transition:color .2s,border-color .2s; }
+    .arc-nav a:hover,.arc-nav a.active { color:#bcecff; border-left:2px solid #6bdcff; text-shadow:0 0 14px rgba(93,206,255,.35); }
+    .command-center > .command-grid { grid-column:2/4; grid-row:2; display:grid; grid-template-columns:minmax(0,1fr) 270px; gap:clamp(24px,3vw,48px); align-items:start; }
+    .command-grid > .map-column { display:block; min-width:0; padding:38px 0 0; }
+    .mission-card {
+      position:relative; min-height:0; width:100%; padding:25px 20px 12px; overflow:visible;
+      border:0; background:transparent; box-shadow:none; text-align:center;
+    }
+    .mission-card::after { display:none; }
+    .micro-label { color:#a8c2d5; font:9px "IBM Plex Mono",monospace; letter-spacing:.34em; }
+    .mission-title { margin:18px 0 12px; color:#f0f7fc; font:300 clamp(36px,5vw,66px)/1.12 "Space Grotesk",sans-serif; letter-spacing:.24em; text-transform:uppercase; }
+    .mission-copy { max-width:760px; margin:0 auto; color:#c0cfdb; font:10px "IBM Plex Mono",monospace; letter-spacing:.3em; text-transform:uppercase; }
+    .mission-progress { justify-content:center; gap:14px; margin:20px auto 0; color:#8da7bb; font:8px "IBM Plex Mono",monospace; letter-spacing:.15em; text-transform:uppercase; }
+    .mission-progress strong { color:#9deaff; font-size:15px; }
+    .mission-track { max-width:220px; height:2px; margin:8px auto 0; background:rgba(184,218,241,.12); }
+    .mission-fill,.sector-fill { background:#79dfff; box-shadow:0 0 12px rgba(101,209,255,.42); }
+    .branch-connect { display:none; }
+    .branch-grid { position:relative; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(22px,5vw,76px); max-width:700px; margin:45px auto 0; padding:0 30px; }
+    .branch-grid::before { content:""; position:absolute; top:50%; left:18%; right:18%; height:1px; background:linear-gradient(90deg,transparent,rgba(125,216,255,.55),transparent); z-index:0; }
+    .branch-card {
+      position:relative; z-index:1; justify-self:center; width:min(100%,210px); aspect-ratio:1; min-height:0; padding:25px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+      border:1px solid rgba(149,216,247,.42); border-radius:50%;
+      background:radial-gradient(circle at 50% 42%,rgba(36,69,91,.72),rgba(5,14,22,.86) 72%);
+      box-shadow:0 0 32px rgba(87,176,220,.08),inset 0 0 28px rgba(111,195,235,.08);
+      transition:border-color .25s,box-shadow .25s,transform .25s;
+    }
+    .branch-card:hover,.branch-card.active { border-color:rgba(151,231,255,.9); background:radial-gradient(circle at 50% 42%,rgba(40,83,109,.78),rgba(5,14,22,.9) 72%); box-shadow:0 0 35px rgba(87,196,238,.17),inset 0 0 30px rgba(111,195,235,.1); transform:translateY(-2px); }
+    .branch-card::before { content:""; position:absolute; inset:8px; border:1px solid rgba(164,219,244,.1); border-radius:50%; pointer-events:none; }
+    .branch-index { color:#8ea9bd; font:8px "IBM Plex Mono",monospace; letter-spacing:.18em; }
+    .branch-name { margin:13px 0 6px; color:#e8f5ff; font-size:16px; letter-spacing:.18em; }
+    .branch-description { min-height:0; color:#9eb2c3; font:10px/1.45 "Space Grotesk",sans-serif; }
+    .branch-card .sector-track { width:74%; height:2px; margin-top:15px; background:rgba(177,215,238,.18); }
+    .branch-meta { display:flex; gap:9px; justify-content:center; margin-top:9px; color:#90a9bd; font:8px "IBM Plex Mono",monospace; }
+    .branch-meta span { display:none; }
+    .branch-meta strong { color:#9deaff; font-size:13px; }
+    .sector-detail { margin:44px auto 0; max-width:760px; padding:0 10px; border:0; border-top:1px solid rgba(179,211,233,.16); background:transparent; }
+    .sector-detail-head { padding:19px 0 12px; }
+    .sector-detail-title { color:#e6f2fa; font-size:19px; letter-spacing:.12em; }
+    .sector-detail-progress { color:#9deaff; }
+    .goal-card { padding:16px 0; border-bottom:1px solid rgba(179,211,233,.1); }
+    .goal-title { color:#e1edf6; font-size:13px; }
+    .goal-description,.milestone { color:#a5b6c4; font:11px/1.55 "Space Grotesk",sans-serif; }
+    .milestone-list { gap:9px; }
+    .goal-progress { color:#839bad; }
+    .command-grid > .board-wrap {
+      min-width:0; padding:38px 0 30px 25px; border:0; border-left:1px solid rgba(184,215,237,.16);
+      align-self:stretch; background:linear-gradient(90deg,rgba(3,9,15,.12),rgba(3,9,15,.42));
+    }
+    .board-wrap .board-topline { margin:0 0 18px; color:#a8bdce; font-size:9px; letter-spacing:.2em; }
+    .board-heading { margin:0 0 5px; color:#e9f4fc; font-size:22px; font-weight:400; letter-spacing:.04em; }
+    .board-subtitle { color:#91a7b9; font:10px/1.6 "Space Grotesk",sans-serif; letter-spacing:.02em; }
+    .board-controls { display:grid; gap:9px; margin:20px 0 8px; }
+    .date-control { justify-content:space-between; color:#9db2c4; font-size:8px; letter-spacing:.12em; }
+    .date-control input { max-width:145px; padding:7px; color:#e0effa; background:rgba(5,13,20,.7); border:1px solid rgba(174,212,237,.2); font-size:10px; }
+    .progress-label { color:#9db2c4; font-size:8px; }
+    .progress-track { height:2px; margin:9px 0 16px; background:rgba(174,212,237,.15); }
+    .progress-fill { background:#7cdefe; }
+    .task-panel { border:0; background:transparent; }
+    .panel-header { padding:16px 0 8px; border-bottom:1px solid rgba(174,212,237,.16); color:#9eb5c8; font:8px "IBM Plex Mono",monospace; letter-spacing:.2em; }
+    .task-row,.side-task-row { min-height:54px; padding:9px 0; border-bottom:1px solid rgba(174,212,237,.09); grid-template-columns:16px minmax(0,1fr) auto; gap:8px; }
+    .task-check { width:14px; height:14px; border-color:#8ca8bd; }
+    .task-check:checked { background:#76dcfb; border-color:#76dcfb; }
+    .task-name { color:#e2edf5; font-size:11px; }
+    .task-time { color:#8ea5b8; font-size:8px; }
+    .task-tag { color:#8ea5b8; font-size:7px; }
+    .side-task-delete { width:64px; min-width:64px; padding:7px 8px; font-size:8px; letter-spacing:.06em; }
+    .investing-editor { gap:6px; margin-top:11px; }
+    .investing-editor input { min-width:0; padding:9px 8px; color:#e4f3ff; background:rgba(5,13,20,.72); border:1px solid rgba(169,215,255,.2); font:10px "Space Grotesk",sans-serif; }
+    .investing-editor button { padding:0 9px; color:#cbe9f8; border:1px solid rgba(125,207,241,.3); background:rgba(35,79,104,.2); font:8px "IBM Plex Mono",monospace; }
+    .rating-input-wrap { padding:12px 0; border-bottom:1px solid rgba(174,204,231,.09); }
+    .rating-input-wrap label,.rating-hint { color:#9eb2c2; font:9px "Space Grotesk",sans-serif; }
+    .rating-input-wrap input { width:45px; padding:6px; color:#e4f3ff; background:rgba(5,13,20,.7); border:1px solid rgba(169,215,255,.2); font-size:11px; }
+    .log-day { margin-top:16px; padding:13px 9px; color:#dff4ff; border:1px solid rgba(125,207,241,.4); background:rgba(35,79,104,.22); font-size:8px; letter-spacing:.1em; }
+    .log-status,.board-foot { color:#8199ac; font-size:8px; line-height:1.6; }
+    @media(max-width:1050px) {
+      .command-center { grid-template-columns:125px minmax(0,1fr); }
+      .command-center > .command-grid { grid-column:2; grid-template-columns:minmax(0,1fr); }
+      .command-grid > .board-wrap { border-left:0; border-top:1px solid rgba(184,215,237,.16); padding:28px 0; margin-top:26px; }
+      .arc-header { grid-template-columns:1fr minmax(300px,420px); }
+      .arc-header-motto { display:none; }
+      .arc-nav { gap:20px; }
+    }
+    @media(max-width:650px) {
+      .dashboard { padding:0 16px 24px; }
+      .command-center { display:block; padding-bottom:24px; }
+      .arc-header { min-height:0; padding:19px 0 14px; display:flex; flex-wrap:wrap; gap:12px; }
+      .arc-brand { gap:10px; }
+      .arc-mark { font-size:29px; }
+      .arc-wordmark { font-size:15px; letter-spacing:.28em; }
+      .arc-submark { font-size:7px; }
+      .performance-strip { width:100%; border-left:0; border-top:1px solid rgba(190,216,237,.12); }
+      .performance-card { padding:10px 9px; border-right:1px solid rgba(190,216,237,.1); }
+      .performance-value { font-size:18px; }
+      .performance-label,.performance-count { font-size:7px; }
+      .arc-nav { padding:14px 0 0; flex-direction:row; justify-content:space-between; gap:8px; }
+      .arc-nav a { padding:7px 0; border-left:0; border-bottom:1px solid rgba(175,207,233,.2); font-size:8px; letter-spacing:.1em; }
+      .command-center > .command-grid { display:block; }
+      .command-grid > .map-column { padding-top:18px; }
+      .mission-card { padding:28px 4px 8px; }
+      .mission-title { font-size:clamp(29px,9vw,43px); letter-spacing:.14em; }
+      .mission-copy { font-size:8px; letter-spacing:.14em; line-height:1.8; }
+      .branch-grid { gap:12px; margin-top:32px; padding:0; }
+      .branch-card { width:min(100%,165px); padding:15px 9px; }
+      .branch-index { font-size:7px; }
+      .branch-name { font-size:12px; letter-spacing:.1em; }
+      .branch-description { font-size:9px; }
+      .branch-meta strong { font-size:11px; }
+      .sector-detail { margin-top:30px; padding:0; }
+      .command-grid > .board-wrap { margin-top:25px; padding:23px 0; }
+      .task-row,.side-task-row { grid-template-columns:16px minmax(0,1fr) auto; }
+      .side-task-delete { width:64px; min-width:64px; }
+      .board-heading { font-size:21px; }
+    }
+    @media(prefers-reduced-motion:reduce) { .dashboard::before { animation:none; } }
+
   </style>
 </head>
 <body>
@@ -772,13 +925,21 @@
   </main>
   <main class="dashboard" id="dashboard" aria-label="Winter Arc dashboard">
     <section class="command-center">
-      <div class="board-topline"><span>Winter Arc / Season 01</span><span>Command Center</span></div>
-      <div class="performance-strip" aria-label="Daily performance averages">
-        <div class="performance-card"><div class="performance-label">Weekly average</div><div class="performance-value" id="weeklyAverage">—</div><div class="performance-count" id="weeklyCount">NO RATINGS YET</div></div>
-        <div class="performance-card"><div class="performance-label">Monthly average</div><div class="performance-value" id="monthlyAverage">—</div><div class="performance-count" id="monthlyCount">NO RATINGS YET</div></div>
-        <div class="performance-card"><div class="performance-label">Yearly average</div><div class="performance-value" id="yearlyAverage">—</div><div class="performance-count" id="yearlyCount">NO RATINGS YET</div></div>
-      </div>
-      <div class="command-grid">
+      <header class="arc-header">
+        <div class="arc-brand"><span class="arc-mark" aria-hidden="true">△</span><div><div class="arc-wordmark">WINTER ARC</div><div class="arc-submark">THE CAMPAIGN</div></div></div>
+        <div class="performance-strip" aria-label="Performance averages">
+          <div class="performance-card"><div class="performance-label">Weekly</div><div class="performance-value" id="weeklyAverage">—</div><div class="performance-count" id="weeklyCount">NO RATINGS YET</div></div>
+          <div class="performance-card"><div class="performance-label">Monthly</div><div class="performance-value" id="monthlyAverage">—</div><div class="performance-count" id="monthlyCount">NO RATINGS YET</div></div>
+          <div class="performance-card"><div class="performance-label">Yearly</div><div class="performance-value" id="yearlyAverage">—</div><div class="performance-count" id="yearlyCount">NO RATINGS YET</div></div>
+        </div>
+        <div class="arc-header-motto">DISCIPLINE BUILDS<br/>FREEDOM</div>
+      </header>
+      <nav class="arc-nav" aria-label="Dashboard navigation">
+        <a class="active" href="#overview">OVERVIEW</a>
+        <a href="#dailyOperations">EXECUTION</a>
+        <a href="#campaignProgress">PROGRESS</a>
+      </nav>
+      <div class="command-grid" id="overview">
         <section class="map-column" aria-label="Winter Arc mission map">
           <div class="mission-card">
             <div class="micro-label">Primary objective / Permanent mission</div>
@@ -802,9 +963,9 @@
               <div class="branch-meta"><span>SECTOR PROGRESS</span><strong id="financialCardValue">0%</strong></div>
             </button>
           </div>
-          <section class="sector-detail" id="sectorDetail" aria-live="polite"></section>
+          <section class="sector-detail" id="sectorDetail" aria-live="polite"><span id="campaignProgress"></span></section>
         </section>
-        <section class="board-wrap" aria-label="Daily execution">
+        <section class="board-wrap" id="dailyOperations" aria-label="Daily execution">
           <div class="board-topline"><span>Daily Operations</span><span>Execution Log</span></div>
       <h2 class="board-heading">Daily Task Board</h2>
       <p class="board-subtitle">Execute the fundamentals. Record the work.</p>
@@ -1082,8 +1243,6 @@
       financial: {
         title:"FINANCIAL", description:"Build financial security through disciplined investing, education, and debt elimination.",
         goals:[
-          {id:"macro",title:"Execute macro signals",description:"Follow the established macro system, acting on valid signals and documenting execution.",milestones:["Define and document execution rules","Execute and document the next valid macro signal","Establish consistent execution and review"]}
-          ,
           {id:"campus",title:"Become an Investing Master",description:"Progress through the Investing Campus curriculum and develop systems to an operational standard.",milestones:["Level 1 — SDCA (completed)","Level 1.5 — LTPI","Level 2 — MTPI","Level 3 — RSPS","Level 4 — Strategy Development","Level 5 — SOPS","Investing Autopsy Course"]}
           ,
           {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan","Pay off the targeted debt"]}
@@ -1098,6 +1257,7 @@
         for (const key of ["physical","financial"]) {
           if (!saved.sectors[key]) saved.sectors[key] = structuredClone(defaultCampaign[key]);
         }
+        saved.sectors.financial.goals = (saved.sectors.financial.goals || []).filter(goal => goal.id !== "macro");
         return saved.sectors;
       } catch (error) { return structuredClone(defaultCampaign); }
     }
