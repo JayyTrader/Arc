@@ -735,7 +735,6 @@
     investingInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") document.getElementById("saveInvesting").click();
     });
-    renderTasks();
 
     // Winter Arc campaign map. Milestones are editable completion records stored locally.
     const CAMPAIGN_KEY = "winterArcCampaignV1";
@@ -917,6 +916,7 @@
       saveTaskData();
       renderAverages();
     });
+    renderTasks();
     renderAverages();
   </script>
 </body>
