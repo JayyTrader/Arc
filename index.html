@@ -331,6 +331,57 @@
     .log-day:hover { border-color:rgba(197,228,255,.85); background:rgba(91,137,178,.2); }
     .log-status { min-height:16px; margin-top:10px; color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
     .board-foot { margin-top:18px; color:#586b7e; font:9px/1.7 "IBM Plex Mono",monospace; letter-spacing:.08em; }
+
+    /* Winter Arc command center */
+    .command-center { width:min(100%,1320px); margin:0 auto; padding:10px 0 56px; }
+    .performance-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:28px 0 30px; }
+    .performance-card { border:1px solid rgba(174,204,231,.13); background:rgba(9,14,20,.72); padding:14px 17px; }
+    .performance-label { color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.14em; text-transform:uppercase; }
+    .performance-value { margin-top:7px; color:#dceeff; font:600 25px "Space Grotesk",sans-serif; letter-spacing:-.04em; }
+    .performance-count { margin-top:3px; color:#65798d; font:9px "IBM Plex Mono",monospace; }
+    .command-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(330px,.85fr); gap:24px; align-items:start; }
+    .map-column { min-width:0; }
+    .mission-card { border:1px solid rgba(169,215,255,.28); background:linear-gradient(145deg,rgba(24,42,58,.75),rgba(7,12,18,.92)); padding:25px; text-align:center; }
+    .micro-label { color:#83a3bd; font:9px "IBM Plex Mono",monospace; letter-spacing:.18em; text-transform:uppercase; }
+    .mission-title { margin:9px 0 6px; color:#e5f3ff; font-size:clamp(25px,4vw,38px); letter-spacing:-.055em; }
+    .mission-copy { margin:0 auto; max-width:520px; color:#91a5b8; font:11px/1.7 "IBM Plex Mono",monospace; }
+    .mission-progress { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; color:#a8bed2; font:10px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .mission-progress strong { color:#8bd4ff; font-size:20px; letter-spacing:0; }
+    .mission-track,.sector-track { height:5px; background:rgba(169,215,255,.12); overflow:hidden; margin-top:9px; }
+    .mission-fill,.sector-fill { height:100%; width:0; background:#80cfff; box-shadow:0 0 12px rgba(126,190,245,.5); transition:width .25s ease; }
+    .branch-connect { text-align:center; color:#55758e; font:9px "IBM Plex Mono",monospace; letter-spacing:.18em; padding:13px 0; }
+    .branch-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .branch-card { appearance:none; width:100%; text-align:left; border:1px solid rgba(174,204,231,.16); background:rgba(9,14,20,.8); color:inherit; padding:19px; cursor:pointer; transition:border-color .2s ease,background .2s ease,transform .2s ease; }
+    .branch-card:hover,.branch-card.active { border-color:rgba(130,205,255,.65); background:rgba(17,32,45,.92); transform:translateY(-2px); }
+    .branch-card.active { box-shadow:inset 0 0 22px rgba(93,164,218,.07); }
+    .branch-index { color:#6e879d; font:9px "IBM Plex Mono",monospace; letter-spacing:.14em; }
+    .branch-name { margin:10px 0 7px; color:#dceeff; font-size:18px; letter-spacing:-.03em; }
+    .branch-description { min-height:35px; color:#8195a8; font:10px/1.55 "IBM Plex Mono",monospace; }
+    .branch-meta { display:flex; justify-content:space-between; align-items:center; margin-top:18px; color:#8fa9bf; font:10px "IBM Plex Mono",monospace; }
+    .sector-detail { margin-top:17px; border:1px solid rgba(174,204,231,.14); background:rgba(8,13,19,.82); }
+    .sector-detail-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:18px 20px; border-bottom:1px solid rgba(174,204,231,.1); }
+    .sector-detail-title { margin:5px 0 0; color:#e1effc; font-size:20px; }
+    .sector-detail-progress { color:#8bd4ff; font:600 18px "Space Grotesk",sans-serif; }
+    .goal-card { padding:17px 20px; border-bottom:1px solid rgba(174,204,231,.09); }
+    .goal-card:last-child { border-bottom:0; }
+    .goal-title { color:#d5e6f5; font-size:13px; font-weight:600; }
+    .goal-description { margin-top:5px; color:#788da1; font:10px/1.55 "IBM Plex Mono",monospace; }
+    .milestone-list { display:grid; gap:9px; margin-top:13px; }
+    .milestone { display:flex; align-items:flex-start; gap:9px; color:#a9bac9; font-size:11px; line-height:1.45; }
+    .milestone input { accent-color:#8bd4ff; margin:1px 0 0; }
+    .milestone.done span { color:#65798b; text-decoration:line-through; }
+    .goal-progress { margin-top:12px; color:#70869b; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .board-wrap { width:100%; margin:0; padding:0 0 56px; }
+    .board-heading { margin:0 0 8px; font-size:clamp(1.7rem,3vw,2.2rem); }
+    .board-topline { margin-bottom:25px; }
+    .board-controls { margin-top:23px; }
+    .rating-input-wrap { display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid rgba(174,204,231,.08); }
+    .rating-input-wrap label { color:#91a5b8; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .rating-input-wrap input { width:62px; padding:8px; color:#e4f3ff; background:#070c12; border:1px solid rgba(169,215,255,.25); font:14px "IBM Plex Mono",monospace; }
+    .rating-hint { color:#667d91; font:9px "IBM Plex Mono",monospace; }
+    @media(max-width:900px) { .command-grid { grid-template-columns:1fr; } .board-wrap { max-width:none; } }
+    @media(max-width:600px) { .performance-strip { gap:7px; } .performance-card { padding:11px 9px; } .performance-value { font-size:21px; } .branch-grid { gap:9px; } .branch-card { padding:13px; } .branch-name { font-size:15px; } .branch-description { font-size:9px; } .sector-detail-head { padding:15px; } .goal-card { padding:15px; } }
+
     @media(max-width:600px) {
       .dashboard { padding:24px 16px; }
       .board-heading { margin-top:36px; }
@@ -388,8 +439,41 @@
     <div class="coordinates">W / A — SEASON 01</div>
   </main>
   <main class="dashboard" id="dashboard" aria-label="Winter Arc dashboard">
-    <section class="board-wrap">
-      <div class="board-topline"><span>Winter Arc / Season 01</span><span>Daily Operations</span></div>
+    <section class="command-center">
+      <div class="board-topline"><span>Winter Arc / Season 01</span><span>Command Center</span></div>
+      <div class="performance-strip" aria-label="Daily performance averages">
+        <div class="performance-card"><div class="performance-label">Weekly average</div><div class="performance-value" id="weeklyAverage">—</div><div class="performance-count" id="weeklyCount">NO RATINGS YET</div></div>
+        <div class="performance-card"><div class="performance-label">Monthly average</div><div class="performance-value" id="monthlyAverage">—</div><div class="performance-count" id="monthlyCount">NO RATINGS YET</div></div>
+        <div class="performance-card"><div class="performance-label">Yearly average</div><div class="performance-value" id="yearlyAverage">—</div><div class="performance-count" id="yearlyCount">NO RATINGS YET</div></div>
+      </div>
+      <div class="command-grid">
+        <section class="map-column" aria-label="Winter Arc mission map">
+          <div class="mission-card">
+            <div class="micro-label">Primary objective / Permanent mission</div>
+            <h2 class="mission-title">THE MAIN IDEA</h2>
+            <p class="mission-copy">Build a stronger, healthier, wealthier life.</p>
+            <div class="mission-progress"><span>Overall progression</span><strong id="mainProgressValue">0%</strong></div>
+            <div class="mission-track"><div class="mission-fill" id="mainProgressFill"></div></div>
+          </div>
+          <div class="branch-connect">↓ &nbsp; TWO CORE BRANCHES &nbsp; ↓</div>
+          <div class="branch-grid">
+            <button class="branch-card active" type="button" data-sector="physical" aria-expanded="true">
+              <div class="branch-index">01 / CORE BRANCH</div><h3 class="branch-name">PHYSICAL</h3>
+              <div class="branch-description">Build and maintain a strong, healthy body.</div>
+              <div class="sector-track"><div class="sector-fill" id="physicalCardFill"></div></div>
+              <div class="branch-meta"><span>SECTOR PROGRESS</span><strong id="physicalCardValue">0%</strong></div>
+            </button>
+            <button class="branch-card" type="button" data-sector="financial" aria-expanded="false">
+              <div class="branch-index">02 / CORE BRANCH</div><h3 class="branch-name">FINANCIAL</h3>
+              <div class="branch-description">Build financial security through disciplined execution.</div>
+              <div class="sector-track"><div class="sector-fill" id="financialCardFill"></div></div>
+              <div class="branch-meta"><span>SECTOR PROGRESS</span><strong id="financialCardValue">0%</strong></div>
+            </button>
+          </div>
+          <section class="sector-detail" id="sectorDetail" aria-live="polite"></section>
+        </section>
+        <section class="board-wrap" aria-label="Daily execution">
+          <div class="board-topline"><span>Daily Operations</span><span>Execution Log</span></div>
       <h2 class="board-heading">Daily Task Board</h2>
       <p class="board-subtitle">Execute the fundamentals. Record the work.</p>
       <div class="board-controls">
@@ -415,6 +499,12 @@
             <button id="saveInvesting" type="button">Save task</button>
           </div>
         </div>
+        <div class="panel-header">Daily Performance Rating</div>
+        <div class="rating-input-wrap">
+          <label for="dailyRating">Rate today / 1–10</label>
+          <input id="dailyRating" type="number" min="1" max="10" step="1" inputmode="numeric" placeholder="—" />
+          <span class="rating-hint">Saved by date · used in rolling averages</span>
+        </div>
         <div class="panel-header">One-Time Side Tasks</div>
         <div id="sideTasks"></div>
         <div style="padding:0 20px 18px">
@@ -426,7 +516,9 @@
       </section>
       <button class="log-day" id="logDay" type="button">Confirm &amp; Log Day →</button>
       <div class="log-status" id="logStatus" aria-live="polite"></div>
-      <p class="board-foot">COMPLETIONS SAVE AS YOU CHECK THEM OFF. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
+      <p class="board-foot">COMPLETIONS AND RATINGS SAVE BY DATE. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
+        </section>
+      </div>
     </section>
   </main>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
@@ -575,6 +667,7 @@
       const investingText = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
       investingName.textContent = investingText || "Set today's investing priority";
       investingInput.value = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
+      dailyRating.value = Number.isInteger(Number(record.rating)) && Number(record.rating) >= 1 && Number(record.rating) <= 10 ? String(record.rating) : "";
       investingCheck.checked = Boolean(record.completed.investing);
       investingRow.classList.toggle("done", investingCheck.checked);
       const total = defaultTasks.length + 1 + record.sideTasks.length;
@@ -599,7 +692,8 @@
         sideTasks: record.sideTasks.map(task => ({ ...task })),
         completedCount: complete,
         totalCount: total,
-        completionPercent: Math.round(complete / total * 100)
+        completionPercent: Math.round(complete / total * 100),
+        rating: Number.isInteger(Number(record.rating)) ? Number(record.rating) : null
       };
       if (!record.logs) record.logs = [];
       record.logs.push(snapshot);
@@ -609,6 +703,7 @@
       next.setDate(next.getDate() + 1);
       taskDate.value = localDateString(next);
       renderTasks();
+      renderAverages();
       logStatus.textContent = "Previous day archived · " + snapshot.completionPercent + "% complete";
     });
     investingCheck.addEventListener("change", () => {
@@ -641,6 +736,188 @@
       if (event.key === "Enter") document.getElementById("saveInvesting").click();
     });
     renderTasks();
+
+    // Winter Arc campaign map. Milestones are editable completion records stored locally.
+    const CAMPAIGN_KEY = "winterArcCampaignV1";
+    const defaultCampaign = {
+      physical: {
+        title:"PHYSICAL", description:"Build and maintain a strong, healthy body.",
+        goals:[
+          {id:"weight",title:"Reach and maintain 170 lbs",description:"A measurable body-composition objective, followed by sustainable maintenance.",milestones:["Define and record a starting weight baseline","Reach 170 lbs","Establish a sustainable maintenance routine"]},
+          {id:"nutrition",title:"Establish the OMAD nutrition protocol",description:"Define the everyday whole-food meal, portions, and nutrition targets, then execute it consistently.",milestones:["Define the daily meal and portions","Establish the complete nutrition protocol","Execute the protocol consistently"]},
+          {id:"training",title:"Train twice per week",description:"Build a repeatable strength-training schedule and maintain it.",milestones:["Define a repeatable two-day weekly schedule","Complete four consecutive weeks at two sessions per week","Maintain the twice-weekly training routine"]}
+        ]
+      },
+      financial: {
+        title:"FINANCIAL", description:"Build financial security through disciplined investing, education, and debt elimination.",
+        goals:[
+          {id:"macro",title:"Execute macro signals",description:"Follow the established macro system, acting on valid signals and documenting execution.",milestones:["Define and document execution rules","Execute and document the next valid macro signal","Establish consistent execution and review"]}
+          ,
+          {id:"campus",title:"Become an Investing Master",description:"Progress through the Investing Campus curriculum and develop systems to an operational standard.",milestones:["Level 1 — SDCA (completed)","Level 1.5 — LTPI","Level 2 — MTPI","Level 3 — RSPS","Level 4 — Strategy Development","Level 5 — SOPS","Investing Autopsy Course"]}
+          ,
+          {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan","Pay off the targeted debt"]}
+        ]
+      }
+    };
+    function readCampaign() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(CAMPAIGN_KEY) || "null");
+        if (!saved || !saved.sectors) return structuredClone(defaultCampaign);
+        // Preserve existing user progress while allowing newly introduced defaults to be added safely.
+        for (const key of ["physical","financial"]) {
+          if (!saved.sectors[key]) saved.sectors[key] = structuredClone(defaultCampaign[key]);
+        }
+        return saved.sectors;
+      } catch (error) { return structuredClone(defaultCampaign); }
+    }
+    let campaign = readCampaign();
+    function saveCampaign() {
+      try { localStorage.setItem(CAMPAIGN_KEY, JSON.stringify({sectors:campaign})); }
+      catch (error) { console.warn("Could not save campaign progress in this browser.", error); }
+    }
+    // Initialize the completed SDCA milestone once, without overwriting subsequent edits.
+    const campusGoal = campaign.financial.goals.find(goal => goal.id === "campus");
+    if (campusGoal && !campusGoal.completed) campusGoal.completed = {"Level 1 — SDCA (completed)":true};
+    saveCampaign();
+    let activeSector = "physical";
+    function milestoneDone(goal, milestone) {
+      return Boolean(goal.completed && goal.completed[milestone]);
+    }
+    function goalProgress(goal) {
+      return goal.milestones.length ? goal.milestones.filter(item => milestoneDone(goal,item)).length / goal.milestones.length * 100 : 0;
+    }
+    function sectorProgress(key) {
+      const goals = campaign[key].goals;
+      return goals.length ? goals.reduce((sum,goal) => sum + goalProgress(goal),0) / goals.length : 0;
+    }
+    function renderCampaign() {
+      const physical = sectorProgress("physical");
+      const financial = sectorProgress("financial");
+      const overall = (physical + financial) / 2;
+      document.getElementById("mainProgressValue").textContent = Math.round(overall) + "%";
+      document.getElementById("mainProgressFill").style.width = overall + "%";
+      for (const [key,value] of [["physical",physical],["financial",financial]]) {
+        document.getElementById(key+"CardValue").textContent = Math.round(value) + "%";
+        document.getElementById(key+"CardFill").style.width = value + "%";
+      }
+      document.querySelectorAll(".branch-card").forEach(button => {
+        const selected = button.dataset.sector === activeSector;
+        button.classList.toggle("active",selected);
+        button.setAttribute("aria-expanded",String(selected));
+      });
+      const sector = campaign[activeSector];
+      const progress = sectorProgress(activeSector);
+      const detail = document.getElementById("sectorDetail");
+      detail.replaceChildren();
+      const head = document.createElement("div");
+      head.className = "sector-detail-head";
+      const headCopy = document.createElement("div");
+      const eyebrow = document.createElement("div");
+      eyebrow.className = "micro-label";
+      eyebrow.textContent = "Sector objectives";
+      const title = document.createElement("h3");
+      title.className = "sector-detail-title";
+      title.textContent = sector.title;
+      headCopy.append(eyebrow,title);
+      const value = document.createElement("div");
+      value.className = "sector-detail-progress";
+      value.textContent = Math.round(progress) + "%";
+      head.append(headCopy,value);
+      detail.append(head);
+      const track = document.createElement("div");
+      track.className = "sector-track";
+      track.style.margin = "0";
+      const fill = document.createElement("div");
+      fill.className = "sector-fill";
+      fill.style.width = progress + "%";
+      track.append(fill);
+      detail.append(track);
+      sector.goals.forEach(goal => {
+        const card = document.createElement("article");
+        card.className = "goal-card";
+        const name = document.createElement("div");
+        name.className = "goal-title";
+        name.textContent = goal.title;
+        const description = document.createElement("div");
+        description.className = "goal-description";
+        description.textContent = goal.description;
+        const list = document.createElement("div");
+        list.className = "milestone-list";
+        goal.milestones.forEach(milestone => {
+          const label = document.createElement("label");
+          label.className = "milestone" + (milestoneDone(goal,milestone) ? " done" : "");
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = milestoneDone(goal,milestone);
+          check.addEventListener("change",() => {
+            if (!goal.completed) goal.completed = {};
+            goal.completed[milestone] = check.checked;
+            saveCampaign();
+            renderCampaign();
+          });
+          const text = document.createElement("span");
+          text.textContent = milestone;
+          label.append(check,text);
+          list.append(label);
+        });
+        const meter = document.createElement("div");
+        meter.className = "goal-progress";
+        meter.textContent = Math.round(goalProgress(goal)) + "% milestone completion";
+        card.append(name,description,list,meter);
+        detail.append(card);
+      });
+    }
+    document.querySelectorAll(".branch-card").forEach(button => {
+      button.addEventListener("click",() => {
+        activeSector = button.dataset.sector;
+        renderCampaign();
+      });
+    });
+    renderCampaign();
+
+    // Daily ratings are stored with each date and averages use the underlying daily scores.
+    const dailyRating = document.getElementById("dailyRating");
+    function averageFor(predicate) {
+      const values = Object.entries(taskData).filter(([date,record]) => predicate(date) && Number.isInteger(Number(record.rating)) && Number(record.rating) >= 1 && Number(record.rating) <= 10).map(([,record]) => Number(record.rating));
+      return {average:values.length ? values.reduce((sum,value) => sum + value,0) / values.length : null,count:values.length};
+    }
+    function renderAverages() {
+      const now = new Date();
+      const startWeek = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      const weekday = (startWeek.getDay()+6)%7;
+      startWeek.setDate(startWeek.getDate()-weekday);
+      const weekStart = localDateString(startWeek);
+      const monthPrefix = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+      const yearPrefix = String(now.getFullYear());
+      const periods = [
+        ["weekly",date => date >= weekStart && date <= localDateString(now)],
+        ["monthly",date => date.startsWith(monthPrefix)],
+        ["yearly",date => date.startsWith(yearPrefix)]
+      ];
+      periods.forEach(([key,predicate]) => {
+        const result = averageFor(predicate);
+        document.getElementById(key+"Average").textContent = result.average === null ? "—" : result.average.toFixed(1)+"/10";
+        document.getElementById(key+"Count").textContent = result.count + (result.count === 1 ? " DAILY RATING" : " DAILY RATINGS");
+      });
+    }
+    dailyRating.addEventListener("change",() => {
+      const value = dailyRating.value.trim();
+      const record = recordFor(taskDate.value);
+      if (value === "") delete record.rating;
+      else {
+        const parsed = Number(value);
+        if (!Number.isInteger(parsed) || parsed < 1 || parsed > 10) {
+          dailyRating.setCustomValidity("Enter a whole-number rating from 1 to 10.");
+          dailyRating.reportValidity();
+          return;
+        }
+        dailyRating.setCustomValidity("");
+        record.rating = parsed;
+      }
+      saveTaskData();
+      renderAverages();
+    });
+    renderAverages();
   </script>
 </body>
 </html>
