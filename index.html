@@ -182,7 +182,7 @@
     }
     .cursor-glow {
       position: fixed;
-      z-index: 0;
+      z-index: 5;
       top: 0;
       left: 0;
       width: 460px;
@@ -321,6 +321,9 @@
     .task-time { margin-top:5px; color:#708397; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
     .task-row.done .task-name { color:#718394; text-decoration:line-through; }
     .task-tag { color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+    .side-task-delete { border:1px solid rgba(190,112,112,.28); background:transparent; color:#a98282; padding:7px 9px; font:9px "IBM Plex Mono",monospace; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    .side-task-delete:hover { border-color:rgba(230,140,140,.75); color:#e6b3b3; background:rgba(120,45,45,.12); }
+    .side-task-row { display:grid; grid-template-columns:22px minmax(0,1fr) auto auto; align-items:center; gap:12px; min-height:76px; padding:14px 20px; border-bottom:1px solid rgba(174,204,231,.08); }
     .investing-editor { display:flex; gap:8px; margin-top:12px; }
     .investing-editor input { flex:1; min-width:0; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:10px 12px; font:12px "Space Grotesk",sans-serif; }
     .investing-editor button { border:1px solid rgba(169,215,255,.3); background:rgba(70,115,155,.12); color:#cfe6fb; padding:0 14px; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
@@ -364,7 +367,6 @@
   <main class="landing" id="landing">
     <div class="atmosphere" aria-hidden="true"></div>
     <div class="particles" aria-hidden="true"></div>
-    <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
     <div class="system-readout left" aria-label="System status">
       <div class="readout-line"><span class="readout-dot"></span><span class="system-label">System</span> / Standby</div>
       <div>Environment / Active</div>
@@ -427,6 +429,7 @@
       <p class="board-foot">COMPLETIONS SAVE AS YOU CHECK THEM OFF. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
     </section>
   </main>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
   <div class="boot-screen" id="bootScreen" aria-hidden="true">
     <div class="boot-copy">Initializing Winter Arc</div>
   </div>
@@ -532,8 +535,8 @@
       });
       sideTasksEl.replaceChildren();
       record.sideTasks.forEach((task) => {
-        const row = document.createElement("label");
-        row.className = "task-row" + (task.completed ? " done" : "");
+        const row = document.createElement("div");
+        row.className = "side-task-row" + (task.completed ? " done" : "");
         const check = document.createElement("input");
         check.type = "checkbox";
         check.className = "task-check";
@@ -556,7 +559,17 @@
         const tag = document.createElement("span");
         tag.className = "task-tag";
         tag.textContent = "Side task";
-        row.append(check, copy, tag);
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "side-task-delete";
+        remove.textContent = "Delete";
+        remove.setAttribute("aria-label", "Delete side task " + task.name);
+        remove.addEventListener("click", () => {
+          record.sideTasks = record.sideTasks.filter(item => item.id !== task.id);
+          saveTaskData();
+          renderTasks();
+        });
+        row.append(check, copy, tag, remove);
         sideTasksEl.append(row);
       });
       const investingText = record.investing || (date === "2026-11-04" ? "Find 3 additional LTPI indicators" : "");
