@@ -753,7 +753,7 @@
       logStatus.textContent = latestLog ? "Previously logged · " + new Date(latestLog.loggedAt).toLocaleString() : "Not yet logged for this date";
     }
     taskDate.value = localDateString();
-    taskDate.addEventListener("change", renderTasks);
+    taskDate.addEventListener("change", () => { renderTasks(); renderAverages(); });
     logDayButton.addEventListener("click", () => {
       const date = taskDate.value;
       const record = recordFor(date);
@@ -948,30 +948,76 @@
     });
     renderCampaign();
 
-    // Daily ratings are stored with each date and averages use the underlying daily scores.
+    // Hierarchical ratings: daily ratings -> weekly means -> monthly means -> yearly means.
+    // The selected date determines which week, month, and year are displayed.
     const dailyRating = document.getElementById("dailyRating");
-    function averageFor(predicate) {
-      const values = Object.entries(taskData).filter(([date,record]) => predicate(date) && Number.isInteger(Number(record.rating)) && Number(record.rating) >= 1 && Number(record.rating) <= 10).map(([,record]) => Number(record.rating));
-      return {average:values.length ? values.reduce((sum,value) => sum + value,0) / values.length : null,count:values.length};
+    function dateFromKey(key) {
+      return new Date(key + "T12:00:00");
+    }
+    function weekBounds(date) {
+      const start = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+      start.setDate(start.getDate() - ((start.getDay()+6)%7));
+      const end = new Date(start);
+      end.setDate(end.getDate()+6);
+      return {start,end,startKey:localDateString(start),endKey:localDateString(end)};
+    }
+    function validDailyRatings() {
+      return Object.entries(taskData)
+        .filter(([date,record]) => /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+          record.rating !== null && record.rating !== "" &&
+          Number.isInteger(Number(record.rating)) && Number(record.rating) >= 1 && Number(record.rating) <= 10)
+        .map(([date,record]) => ({date,value:Number(record.rating)}));
+    }
+    function mean(values) {
+      return values.length ? values.reduce((sum,value) => sum + value,0) / values.length : null;
+    }
+    function weeklyScores(ratings) {
+      const groups = new Map();
+      ratings.forEach(({date,value}) => {
+        const bounds = weekBounds(dateFromKey(date));
+        if (!groups.has(bounds.startKey)) groups.set(bounds.startKey,{...bounds,values:[]});
+        groups.get(bounds.startKey).values.push(value);
+      });
+      const result = new Map();
+      groups.forEach(group => result.set(group.startKey,{
+        ...group,
+        average:mean(group.values),
+        count:group.values.length
+      }));
+      return result;
+    }
+    function monthlyScores(weeks) {
+      const groups = new Map();
+      weeks.forEach(week => {
+        // A week is attributed to the calendar month in which it ends (Sunday).
+        const monthKey = week.endKey.slice(0,7);
+        if (!groups.has(monthKey)) groups.set(monthKey,[]);
+        groups.get(monthKey).push(week.average);
+      });
+      const result = new Map();
+      groups.forEach((values,key) => result.set(key,{average:mean(values),count:values.length}));
+      return result;
     }
     function renderAverages() {
-      const now = new Date();
-      const startWeek = new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      const weekday = (startWeek.getDay()+6)%7;
-      startWeek.setDate(startWeek.getDate()-weekday);
-      const weekStart = localDateString(startWeek);
-      const monthPrefix = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
-      const yearPrefix = String(now.getFullYear());
-      const periods = [
-        ["weekly",date => date >= weekStart && date <= localDateString(now)],
-        ["monthly",date => date.startsWith(monthPrefix)],
-        ["yearly",date => date.startsWith(yearPrefix)]
-      ];
-      periods.forEach(([key,predicate]) => {
-        const result = averageFor(predicate);
-        document.getElementById(key+"Average").textContent = result.average === null ? "—" : result.average.toFixed(1)+"/10";
-        document.getElementById(key+"Count").textContent = result.count + (result.count === 1 ? " DAILY RATING" : " DAILY RATINGS");
-      });
+      const selectedDate = dateFromKey(taskDate.value || localDateString());
+      const selectedWeek = weekBounds(selectedDate);
+      const selectedMonth = taskDate.value.slice(0,7);
+      const selectedYear = taskDate.value.slice(0,4);
+      const ratings = validDailyRatings();
+      const weeks = weeklyScores(ratings);
+      const months = monthlyScores(weeks);
+      const currentWeek = weeks.get(selectedWeek.startKey);
+      const currentMonth = months.get(selectedMonth);
+      const yearValues = [...months.entries()]
+        .filter(([month]) => month.startsWith(selectedYear))
+        .map(([,entry]) => entry.average);
+      const currentYearAverage = mean(yearValues);
+      document.getElementById("weeklyAverage").textContent = currentWeek ? currentWeek.average.toFixed(1)+"/10" : "—";
+      document.getElementById("monthlyAverage").textContent = currentMonth ? currentMonth.average.toFixed(1)+"/10" : "—";
+      document.getElementById("yearlyAverage").textContent = currentYearAverage === null ? "—" : currentYearAverage.toFixed(1)+"/10";
+      document.getElementById("weeklyCount").textContent = currentWeek ? currentWeek.count + (currentWeek.count === 1 ? " DAILY RATING" : " DAILY RATINGS") : "NO RATINGS THIS WEEK";
+      document.getElementById("monthlyCount").textContent = currentMonth ? currentMonth.count + (currentMonth.count === 1 ? " WEEK SCORE" : " WEEK SCORES") : "NO WEEK SCORES THIS MONTH";
+      document.getElementById("yearlyCount").textContent = yearValues.length + (yearValues.length === 1 ? " MONTH SCORE" : " MONTH SCORES");
     }
     dailyRating.addEventListener("change",() => {
       const value = dailyRating.value.trim();
