@@ -371,6 +371,9 @@
     .milestone input { accent-color:#8bd4ff; margin:1px 0 0; }
     .milestone.done span { color:#65798b; text-decoration:line-through; }
     .goal-progress { margin-top:12px; color:#70869b; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .nutrition-week-grid { display:grid; gap:9px; margin:13px 0 5px; }
+    .nutrition-day-row { font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; }
+    .nutrition-day-row input { accent-color:#8bd4ff; width:14px; height:14px; margin:0; }
     .workout-schedule { display:grid; gap:9px; margin:13px 0 5px; }
     .workout-check-row { font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; }
     .workout-check-row input { accent-color:#8bd4ff; width:14px; height:14px; margin:0; }
@@ -1495,22 +1498,34 @@
         const nutritionTitle = document.createElement("div");
         nutritionTitle.className = "physical-module-title";
         nutritionTitle.textContent = "NUTRITION ADHERENCE";
-        const nutritionRecord = recordFor(taskDate.value);
-        const nutritionLabel = document.createElement("label");
-        nutritionLabel.className = "physical-check-row";
-        const nutritionCheck = document.createElement("input");
-        nutritionCheck.type = "checkbox";
-        nutritionCheck.checked = Boolean(nutritionRecord.nutritionFollowed);
-        nutritionCheck.addEventListener("change", () => {
-          nutritionRecord.nutritionFollowed = nutritionCheck.checked;
-          saveTaskData();
-          renderCampaign();
+        const nutritionDays = [];
+        for (let offset = 0; offset < 7; offset++) {
+          const date = new Date(weekStart);
+          date.setDate(date.getDate() + offset);
+          nutritionDays.push({date:dateKey(date),dayName:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][offset]});
+        }
+        const nutritionChecks = document.createElement("div");
+        nutritionChecks.className = "nutrition-week-grid";
+        nutritionDays.forEach(day => {
+          const dayRecord = taskData[day.date] || {};
+          const label = document.createElement("label");
+          label.className = "physical-check-row nutrition-day-row";
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = Boolean(dayRecord.nutritionFollowed);
+          check.addEventListener("change", () => {
+            const record = recordFor(day.date);
+            record.nutritionFollowed = check.checked;
+            saveTaskData();
+            renderCampaign();
+          });
+          const copy = document.createElement("span");
+          copy.textContent = day.dayName.toUpperCase() + " · " + day.date;
+          label.append(check,copy);
+          nutritionChecks.append(label);
         });
-        const nutritionText = document.createElement("span");
-        nutritionText.textContent = "Followed intended meal plan";
-        nutritionLabel.append(nutritionCheck,nutritionText);
-        const followedDays = weekDates.filter(date => Boolean(taskData[date] && taskData[date].nutritionFollowed)).length;
-        const adherence = weekDates.length ? Math.round(followedDays/weekDates.length*100) : 0;
+        const followedDays = nutritionDays.filter(day => Boolean(taskData[day.date] && taskData[day.date].nutritionFollowed)).length;
+        const adherence = Math.round(followedDays / 7 * 100);
         const adherenceValue = document.createElement("div");
         adherenceValue.className = "adherence-value";
         adherenceValue.textContent = adherence + "%";
@@ -1522,8 +1537,34 @@
         adherenceBar.append(adherenceFill);
         const adherenceCaption = document.createElement("div");
         adherenceCaption.className = "adherence-caption";
-        adherenceCaption.textContent = followedDays + " / " + weekDates.length + " DAYS FOLLOWED · WEEK TO DATE";
-        nutritionCard.append(nutritionTitle,nutritionLabel,adherenceValue,adherenceBar,adherenceCaption);
+        adherenceCaption.textContent = followedDays + " / 7 DAYS FOLLOWED · SELECTED WEEK";
+        const nutritionHistory = document.createElement("div");
+        nutritionHistory.className = "workout-history";
+        const nutritionHistoryTitle = document.createElement("div");
+        nutritionHistoryTitle.className = "workout-history-title";
+        nutritionHistoryTitle.textContent = "WEEKLY ADHERENCE HISTORY";
+        nutritionHistory.append(nutritionHistoryTitle);
+        for (let i = 0; i < 8; i++) {
+          const startDate = new Date(weekStart);
+          startDate.setDate(startDate.getDate() - i * 7);
+          const endDate = new Date(startDate);
+          endDate.setDate(endDate.getDate() + 6);
+          const startString = dateKey(startDate);
+          const endString = dateKey(endDate);
+          const count = Array.from({length:7},(_,offset) => {
+            const date = new Date(startDate);
+            date.setDate(date.getDate() + offset);
+            const record = taskData[dateKey(date)];
+            return Boolean(record && record.nutritionFollowed);
+          }).filter(Boolean).length;
+          const hasEntries = Object.keys(taskData).some(key => key >= startString && key <= endString && taskData[key] && Object.prototype.hasOwnProperty.call(taskData[key],"nutritionFollowed"));
+          if (i === 0 || hasEntries) {
+            const line = document.createElement("div");
+            line.textContent = startString + " — " + endString + " · " + count + "/7 · " + Math.round(count/7*100) + "%";
+            nutritionHistory.append(line);
+          }
+        }
+        nutritionCard.append(nutritionTitle,nutritionChecks,adherenceValue,adherenceBar,adherenceCaption,nutritionHistory);
         const workoutCard = document.createElement("article");
         workoutCard.className = "physical-module";
         const workoutTitle = document.createElement("div");
