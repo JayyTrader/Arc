@@ -895,6 +895,20 @@
       .side-task-delete { width:64px; min-width:64px; }
       .board-heading { font-size:21px; }
     }
+    /* Keep daily execution visible beside the campaign on desktop-sized viewports. */
+    @media(min-width:651px) and (max-width:1050px) {
+      .command-center { grid-template-columns:100px minmax(0,1fr); column-gap:20px; }
+      .command-center > .command-grid {
+        grid-column:2; grid-template-columns:minmax(0,1fr) 245px;
+        gap:22px; align-items:start;
+      }
+      .command-grid > .board-wrap {
+        border-left:1px solid rgba(184,215,237,.16); border-top:0;
+        padding:28px 0 28px 18px; margin-top:0; align-self:start;
+      }
+      .arc-nav { gap:18px; }
+      .arc-nav a { padding-left:10px; font-size:8px; letter-spacing:.14em; }
+    }
     @media(prefers-reduced-motion:reduce) { .dashboard::before { animation:none; } }
 
   </style>
