@@ -1003,6 +1003,55 @@
     @media(max-width:650px) { .physical-execution-grid { grid-template-columns:1fr; } }
     @media(prefers-reduced-motion:reduce) { .dashboard::before { animation:none; } }
 
+
+    /* Winter Arc — quiet, dark, spacious presentation */
+    .dashboard { background:#020407; padding:clamp(30px,6vw,92px); }
+    .command-center { display:block !important; width:min(100%,1500px); min-height:100vh; margin:0 auto; padding:0 0 100px; }
+    .arc-header { display:grid; grid-template-columns:1fr auto; grid-template-rows:auto auto; gap:42px 28px; min-height:0; padding:28px 0 0; border:0; }
+    .arc-brand { gap:17px; }
+    .arc-mark { color:rgba(157,211,239,.58); font-size:27px; text-shadow:none; }
+    .arc-wordmark { color:#dce8f2; font-size:15px; letter-spacing:.42em; font-weight:400; }
+    .arc-submark { color:#536575; font-size:8px; letter-spacing:.3em; }
+    .arc-header-motto { color:#526273; font-size:8px; letter-spacing:.2em; line-height:1.9; }
+    .performance-strip { grid-column:1/-1; display:block; overflow:hidden; width:100%; margin:0; padding:12px 0; border:0; border-top:1px solid rgba(150,183,207,.09); border-bottom:1px solid rgba(150,183,207,.09); background:transparent; }
+    .ticker-track { display:flex; width:max-content; animation:arcTicker 58s linear infinite; }
+    .ticker-set { display:flex; align-items:center; flex:0 0 auto; gap:clamp(38px,6vw,100px); padding-right:clamp(38px,6vw,100px); }
+    .ticker-item { color:#566879; font:8px "IBM Plex Mono",monospace; letter-spacing:.2em; white-space:nowrap; }
+    .ticker-item b { color:#a7c4d8; font:500 10px "Space Grotesk",sans-serif; letter-spacing:.04em; margin-left:8px; }
+    @keyframes arcTicker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    .performance-strip:hover .ticker-track { animation-play-state:paused; }
+    .command-center > .command-grid { display:grid; grid-column:auto; grid-row:auto; grid-template-columns:minmax(0,1fr) 270px; gap:clamp(50px,8vw,130px); align-items:start; margin-top:clamp(90px,12vh,170px); }
+    .command-grid > .map-column { padding:0; }
+    .mission-card { margin:0; padding:28px 0 35px; border:0; background:transparent; }
+    .mission-title { margin:30px 0 20px; color:#dbe8f2; font-size:clamp(30px,4vw,48px); letter-spacing:.28em; font-weight:300; }
+    .mission-copy { color:#748595; letter-spacing:.2em; }
+    .branch-grid { margin-top:clamp(75px,11vh,145px); gap:clamp(35px,7vw,105px); }
+    .branch-card { background:rgba(4,8,13,.38); border-color:rgba(145,180,204,.18); box-shadow:none; }
+    .branch-card:hover,.branch-card.active { background:rgba(8,17,25,.55); border-color:rgba(130,195,225,.48); box-shadow:none; }
+    .sector-detail { margin-top:clamp(55px,8vh,100px); border-color:rgba(145,180,204,.12); background:rgba(4,8,13,.24); }
+    .physical-execution { margin-top:35px; padding-top:30px; border-color:rgba(145,180,204,.1); }
+    .physical-module { padding:22px 18px; border-color:rgba(145,180,204,.1); background:rgba(3,7,11,.2); }
+    .goal-card { padding:24px 20px; }
+    .command-grid > .board-wrap { padding-top:0; }
+    .board-heading { letter-spacing:.08em; font-weight:400; }
+    .board-topline { margin-bottom:42px; color:#526273; }
+    @media(max-width:900px) {
+      .dashboard { padding:28px 22px; }
+      .command-center > .command-grid { grid-template-columns:1fr; gap:55px; margin-top:75px; }
+      .arc-header { gap:32px 18px; }
+      .branch-grid { margin-top:65px; }
+    }
+    @media(max-width:600px) {
+      .dashboard { padding:24px 16px; }
+      .arc-header { gap:28px 12px; }
+      .arc-wordmark { font-size:12px; }
+      .arc-header-motto { font-size:7px; }
+      .ticker-set { gap:32px; padding-right:32px; }
+      .ticker-track { animation-duration:48s; }
+      .command-center > .command-grid { margin-top:65px; }
+      .branch-grid { margin-top:55px; padding:0 5px; gap:15px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1033,18 +1082,26 @@
     <section class="command-center">
       <header class="arc-header">
         <div class="arc-brand"><span class="arc-mark" aria-hidden="true">△</span><div><div class="arc-wordmark">WINTER ARC</div><div class="arc-submark">THE CAMPAIGN</div></div></div>
-        <div class="performance-strip" aria-label="Performance averages">
-          <div class="performance-card"><div class="performance-label">Weekly</div><div class="performance-value" id="weeklyAverage">—</div><div class="performance-count" id="weeklyCount">NO RATINGS YET</div></div>
-          <div class="performance-card"><div class="performance-label">Monthly</div><div class="performance-value" id="monthlyAverage">—</div><div class="performance-count" id="monthlyCount">NO RATINGS YET</div></div>
-          <div class="performance-card"><div class="performance-label">Yearly</div><div class="performance-value" id="yearlyAverage">—</div><div class="performance-count" id="yearlyCount">NO RATINGS YET</div></div>
-        </div>
         <div class="arc-header-motto">DISCIPLINE BUILDS<br/>FREEDOM</div>
+        <div class="performance-strip" aria-label="Weekly adherence and performance averages">
+          <div class="ticker-track">
+            <div class="ticker-set">
+              <span class="ticker-item">NUT <b id="tickerNutrition">—</b></span>
+              <span class="ticker-item">TRN <b id="tickerTraining">—</b></span>
+              <span class="ticker-item">W AVG <b id="weeklyAverage">—</b></span>
+              <span class="ticker-item">M AVG <b id="monthlyAverage">—</b></span>
+              <span class="ticker-item">Y AVG <b id="yearlyAverage">—</b></span>
+            </div>
+            <div class="ticker-set" aria-hidden="true">
+              <span class="ticker-item">NUT <b data-mirror="tickerNutrition">—</b></span>
+              <span class="ticker-item">TRN <b data-mirror="tickerTraining">—</b></span>
+              <span class="ticker-item">W AVG <b data-mirror="weeklyAverage">—</b></span>
+              <span class="ticker-item">M AVG <b data-mirror="monthlyAverage">—</b></span>
+              <span class="ticker-item">Y AVG <b data-mirror="yearlyAverage">—</b></span>
+            </div>
+          </div>
+        </div>
       </header>
-      <nav class="arc-nav" aria-label="Dashboard navigation">
-        <a class="active" href="#overview">OVERVIEW</a>
-        <a href="#dailyOperations">EXECUTION</a>
-        <a href="#campaignProgress">PROGRESS</a>
-      </nav>
       <div class="command-grid" id="overview">
         <section class="map-column" aria-label="Winter Arc mission map">
           <div class="mission-card">
@@ -1544,6 +1601,8 @@
         const adherenceCaption = document.createElement("div");
         adherenceCaption.className = "adherence-caption";
         adherenceCaption.textContent = followedDays + " / 7 DAYS FOLLOWED · SELECTED WEEK";
+        const tickerNutrition = document.getElementById("tickerNutrition");
+        if (tickerNutrition) tickerNutrition.textContent = adherence + "%";
         const nutritionHistory = document.createElement("div");
         nutritionHistory.className = "workout-history";
         const nutritionHistoryTitle = document.createElement("div");
@@ -1601,6 +1660,8 @@
         const workoutCaption = document.createElement("div");
         workoutCaption.className = "workout-caption";
         workoutCaption.textContent = Math.round(completedSlots / 2 * 100) + "% WEEKLY ADHERENCE";
+        const tickerTraining = document.getElementById("tickerTraining");
+        if (tickerTraining) tickerTraining.textContent = Math.round(completedSlots / 2 * 100) + "%";
         const schedule = document.createElement("div");
         schedule.className = "workout-schedule";
         workoutSlots.forEach(slot => {
@@ -1765,6 +1826,10 @@
       document.getElementById("weeklyAverage").textContent = currentWeek ? currentWeek.average.toFixed(1)+"/10" : "—";
       document.getElementById("monthlyAverage").textContent = currentMonth ? currentMonth.average.toFixed(1)+"/10" : "—";
       document.getElementById("yearlyAverage").textContent = currentYearAverage === null ? "—" : currentYearAverage.toFixed(1)+"/10";
+      document.querySelectorAll("[data-mirror]").forEach(node => {
+        const source = document.getElementById(node.dataset.mirror);
+        if (source) node.textContent = source.textContent;
+      });
       document.getElementById("weeklyCount").textContent = currentWeek ? currentWeek.count + (currentWeek.count === 1 ? " DAILY RATING" : " DAILY RATINGS") : "NO RATINGS THIS WEEK";
       document.getElementById("monthlyCount").textContent = currentMonth ? currentMonth.count + (currentMonth.count === 1 ? " WEEK SCORE" : " WEEK SCORES") : "NO WEEK SCORES THIS MONTH";
       document.getElementById("yearlyCount").textContent = yearValues.length + (yearValues.length === 1 ? " MONTH SCORE" : " MONTH SCORES");
