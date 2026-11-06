@@ -1052,6 +1052,29 @@
       .branch-grid { margin-top:55px; padding:0 5px; gap:15px; }
     }
 
+
+    /* Align the campaign map and execution panel on the same desktop baseline. */
+    @media(min-width:901px) {
+      .command-center > .command-grid {
+        align-items:start !important;
+        margin-top:clamp(55px,7vh,90px) !important;
+      }
+      .command-grid > .map-column {
+        align-self:start !important;
+        padding-top:0 !important;
+        margin-top:0 !important;
+      }
+      .command-grid > .board-wrap {
+        align-self:start !important;
+        padding-top:0 !important;
+        margin-top:0 !important;
+      }
+      .map-column > .mission-card {
+        margin-top:0 !important;
+        padding-top:0 !important;
+      }
+    }
+
   </style>
 </head>
 <body>
