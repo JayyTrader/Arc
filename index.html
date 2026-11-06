@@ -1525,6 +1525,13 @@
         workoutTitle.className = "physical-module-title";
         workoutTitle.textContent = "STRENGTH & CONDITIONING";
         const sessions = weekDates.flatMap(date => (taskData[date] && Array.isArray(taskData[date].workouts) ? taskData[date].workouts.map(session => ({...session,date})) : []));
+        const workoutDays = ["Tuesday","Friday"];
+        const nextWorkoutDays = workoutDays.map(dayName => {
+          const dayIndex = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(dayName);
+          const date = new Date(weekStart);
+          date.setDate(date.getDate() + ((dayIndex + 6) % 7));
+          return {dayName,date:dateKey(date),done:sessions.some(session => session.date === dateKey(date))};
+        });
         const workoutCount = document.createElement("div");
         workoutCount.className = "workout-count";
         workoutCount.textContent = sessions.length + " / 2 SESSIONS";
@@ -1537,10 +1544,23 @@
         const workoutCaption = document.createElement("div");
         workoutCaption.className = "workout-caption";
         workoutCaption.textContent = sessions.length >= 2 ? "WEEKLY TARGET ACHIEVED" : (2-sessions.length) + " MORE TO REACH WEEKLY TARGET";
+        const schedule = document.createElement("div");
+        schedule.className = "workout-history";
+        nextWorkoutDays.forEach(slot => {
+          const line = document.createElement("div");
+          line.textContent = (slot.done ? "✓  " : "○  ") + slot.dayName.toUpperCase() + " · " + slot.date;
+          schedule.append(line);
+        });
         const workoutButton = document.createElement("button");
         workoutButton.type = "button";
         workoutButton.textContent = "+ LOG WORKOUT";
         workoutButton.addEventListener("click", () => {
+          const chosen = dateFromKey(taskDate.value);
+          const dayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][chosen.getDay()];
+          if (!["Tuesday","Friday"].includes(dayName)) {
+            alert("Your scheduled workout days are Tuesday and Friday. Select one of those dates to log a session.");
+            return;
+          }
           const record = recordFor(taskDate.value);
           if (!Array.isArray(record.workouts)) record.workouts = [];
           record.workouts.push({id:"workout-"+Date.now(),loggedAt:new Date().toISOString()});
@@ -1554,7 +1574,7 @@
           line.textContent = "✓  " + session.date;
           workoutHistory.append(line);
         });
-        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,workoutButton,workoutHistory);
+        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,schedule,workoutButton,workoutHistory);
         grid.append(nutritionCard,workoutCard);
         execution.append(grid);
         detail.append(execution);
