@@ -1265,7 +1265,14 @@
       }
     }
 
-  </style>
+  
+    /* Use the uploaded photograph only; remove the old SVG mountain illustration. */
+    .dashboard::before {
+      content: none !important;
+      background: none !important;
+      animation: none !important;
+    }
+</style>
 </head>
 <body>
   <main class="landing" id="landing">
