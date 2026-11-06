@@ -371,6 +371,11 @@
     .milestone input { accent-color:#8bd4ff; margin:1px 0 0; }
     .milestone.done span { color:#65798b; text-decoration:line-through; }
     .goal-progress { margin-top:12px; color:#70869b; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .workout-schedule { display:grid; gap:9px; margin:13px 0 5px; }
+    .workout-check-row { font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; }
+    .workout-check-row input { accent-color:#8bd4ff; width:14px; height:14px; margin:0; }
+    .workout-history-title { margin:13px 0 7px; color:#83a3bd; font:9px "IBM Plex Mono",monospace; letter-spacing:.13em; }
+    .workout-history { display:grid; gap:5px; margin-top:12px; color:#71869a; font:9px "IBM Plex Mono",monospace; }
     .board-wrap { width:100%; margin:0; padding:0 0 56px; }
     .board-heading { margin:0 0 8px; font-size:clamp(1.7rem,3vw,2.2rem); }
     .board-topline { margin-bottom:25px; }
@@ -1524,57 +1529,81 @@
         const workoutTitle = document.createElement("div");
         workoutTitle.className = "physical-module-title";
         workoutTitle.textContent = "STRENGTH & CONDITIONING";
-        const sessions = weekDates.flatMap(date => (taskData[date] && Array.isArray(taskData[date].workouts) ? taskData[date].workouts.map(session => ({...session,date})) : []));
-        const workoutDays = ["Tuesday","Friday"];
-        const nextWorkoutDays = workoutDays.map(dayName => {
-          const dayIndex = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(dayName);
+        const workoutDays = [
+          {dayName:"Tuesday",offset:1},
+          {dayName:"Friday",offset:4}
+        ];
+        const workoutSlots = workoutDays.map(slot => {
           const date = new Date(weekStart);
-          date.setDate(date.getDate() + ((dayIndex + 6) % 7));
-          return {dayName,date:dateKey(date),done:sessions.some(session => session.date === dateKey(date))};
+          date.setDate(date.getDate() + slot.offset);
+          const dateString = dateKey(date);
+          const dayRecord = taskData[dateString] || {};
+          const legacyDone = Array.isArray(dayRecord.workouts) && dayRecord.workouts.length > 0;
+          return {...slot,date:dateString,done:Boolean(dayRecord.workoutDone || legacyDone)};
         });
+        const completedSlots = workoutSlots.filter(slot => slot.done).length;
         const workoutCount = document.createElement("div");
         workoutCount.className = "workout-count";
-        workoutCount.textContent = sessions.length + " / 2 SESSIONS";
+        workoutCount.textContent = completedSlots + " / 2 SESSIONS";
         const workoutBar = document.createElement("div");
         workoutBar.className = "physical-meter";
         const workoutFill = document.createElement("div");
         workoutFill.className = "physical-meter-fill";
-        workoutFill.style.width = Math.min(sessions.length/2*100,100) + "%";
+        workoutFill.style.width = (completedSlots / 2 * 100) + "%";
         workoutBar.append(workoutFill);
         const workoutCaption = document.createElement("div");
         workoutCaption.className = "workout-caption";
-        workoutCaption.textContent = sessions.length >= 2 ? "WEEKLY TARGET ACHIEVED" : (2-sessions.length) + " MORE TO REACH WEEKLY TARGET";
+        workoutCaption.textContent = Math.round(completedSlots / 2 * 100) + "% WEEKLY ADHERENCE";
         const schedule = document.createElement("div");
-        schedule.className = "workout-history";
-        nextWorkoutDays.forEach(slot => {
-          const line = document.createElement("div");
-          line.textContent = (slot.done ? "✓  " : "○  ") + slot.dayName.toUpperCase() + " · " + slot.date;
-          schedule.append(line);
-        });
-        const workoutButton = document.createElement("button");
-        workoutButton.type = "button";
-        workoutButton.textContent = "+ LOG WORKOUT";
-        workoutButton.addEventListener("click", () => {
-          const chosen = dateFromKey(taskDate.value);
-          const dayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][chosen.getDay()];
-          if (!["Tuesday","Friday"].includes(dayName)) {
-            alert("Your scheduled workout days are Tuesday and Friday. Select one of those dates to log a session.");
-            return;
-          }
-          const record = recordFor(taskDate.value);
-          if (!Array.isArray(record.workouts)) record.workouts = [];
-          record.workouts.push({id:"workout-"+Date.now(),loggedAt:new Date().toISOString()});
-          saveTaskData();
-          renderCampaign();
+        schedule.className = "workout-schedule";
+        workoutSlots.forEach(slot => {
+          const label = document.createElement("label");
+          label.className = "physical-check-row workout-check-row";
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = slot.done;
+          check.addEventListener("change", () => {
+            const dayRecord = recordFor(slot.date);
+            dayRecord.workoutDone = check.checked;
+            saveTaskData();
+            renderCampaign();
+          });
+          const copy = document.createElement("span");
+          copy.textContent = slot.dayName.toUpperCase() + " · " + slot.date;
+          label.append(check,copy);
+          schedule.append(label);
         });
         const workoutHistory = document.createElement("div");
         workoutHistory.className = "workout-history";
-        sessions.slice(-5).reverse().forEach(session => {
+        const historyTitle = document.createElement("div");
+        historyTitle.className = "workout-history-title";
+        historyTitle.textContent = "WEEKLY ADHERENCE HISTORY";
+        workoutHistory.append(historyTitle);
+        const weekHistory = [];
+        const weekCursor = new Date(weekStart);
+        for (let i = 0; i < 8; i++) {
+          const startDate = new Date(weekCursor);
+          startDate.setDate(startDate.getDate() - i * 7);
+          const endDate = new Date(startDate);
+          endDate.setDate(endDate.getDate() + 6);
+          const startString = dateKey(startDate);
+          const endString = dateKey(endDate);
+          const done = [1,4].filter(offset => {
+            const day = new Date(startDate);
+            day.setDate(day.getDate() + offset);
+            const dayRecord = taskData[dateKey(day)] || {};
+            return Boolean(dayRecord.workoutDone || (Array.isArray(dayRecord.workouts) && dayRecord.workouts.length));
+          }).length;
+          if (i === 0 || done > 0 || Object.keys(taskData).some(key => key >= startString && key <= endString && taskData[key] && (Object.prototype.hasOwnProperty.call(taskData[key],"workoutDone") || Array.isArray(taskData[key].workouts)))) {
+            weekHistory.push({startString,endString,done});
+          }
+        }
+        weekHistory.forEach(week => {
           const line = document.createElement("div");
-          line.textContent = "✓  " + session.date;
+          line.textContent = week.startString + " — " + week.endString + " · " + week.done + "/2 · " + Math.round(week.done/2*100) + "%";
           workoutHistory.append(line);
         });
-        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,schedule,workoutButton,workoutHistory);
+        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,schedule,workoutHistory);
         grid.append(nutritionCard,workoutCard);
         execution.append(grid);
         detail.append(execution);
