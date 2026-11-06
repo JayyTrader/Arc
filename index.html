@@ -1388,11 +1388,9 @@
     const CAMPAIGN_KEY = "winterArcCampaignV1";
     const defaultCampaign = {
       physical: {
-        title:"PHYSICAL", description:"Build and maintain a strong, healthy body.",
+        title:"PHYSICAL", description:"Reach 170 lbs while preserving muscle and building sustainable health habits.",
         goals:[
-          {id:"weight",title:"Reach and maintain 170 lbs",description:"A measurable body-composition objective, followed by sustainable maintenance.",milestones:["Define and record a starting weight baseline","Reach 170 lbs","Establish a sustainable maintenance routine"]},
-          {id:"nutrition",title:"Establish the OMAD nutrition protocol",description:"Define the everyday whole-food meal, portions, and nutrition targets, then execute it consistently.",milestones:["Define the daily meal and portions","Establish the complete nutrition protocol","Execute the protocol consistently"]},
-          {id:"training",title:"Train twice per week",description:"Build a repeatable strength-training schedule and maintain it.",milestones:["Define a repeatable two-day weekly schedule","Complete four consecutive weeks at two sessions per week","Maintain the twice-weekly training routine"]}
+          {id:"weight",title:"Reach 170 lbs",description:"Reach the target weight while preserving muscle, then establish a sustainable maintenance routine.",milestones:["Define and record a starting weight baseline","Reach 170 lbs","Establish a sustainable maintenance routine"]}
         ]
       },
       financial: {
@@ -1413,6 +1411,14 @@
           if (!saved.sectors[key]) saved.sectors[key] = structuredClone(defaultCampaign[key]);
         }
         saved.sectors.financial.goals = (saved.sectors.financial.goals || []).filter(goal => goal.id !== "macro");
+        const oldPhysicalGoals = saved.sectors.physical.goals || [];
+        const weightGoal = oldPhysicalGoals.find(goal => goal.id === "weight");
+        saved.sectors.physical = {
+          ...saved.sectors.physical,
+          title:"PHYSICAL",
+          description:"Reach 170 lbs while preserving muscle and building sustainable health habits.",
+          goals:[weightGoal ? {...weightGoal,title:"Reach 170 lbs",description:"Reach the target weight while preserving muscle, then establish a sustainable maintenance routine.",milestones:["Define and record a starting weight baseline","Reach 170 lbs","Establish a sustainable maintenance routine"]} : structuredClone(defaultCampaign.physical.goals[0])]
+        };
         return saved.sectors;
       } catch (error) { return structuredClone(defaultCampaign); }
     }
