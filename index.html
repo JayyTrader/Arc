@@ -978,6 +978,21 @@
     .weight-summary { color:#9deaff; font:9px "IBM Plex Mono",monospace; padding:4px 0; }
     .weight-chart { display:block; width:100%; height:92px; overflow:visible; }
     .weight-chart-caption { color:#8199ac; font:8px "IBM Plex Mono",monospace; }
+    .physical-execution { margin:26px 0 0; padding:20px 0 4px; border-top:1px solid rgba(179,211,233,.16); }
+    .physical-execution-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
+    .physical-module { min-width:0; padding:15px; border:1px solid rgba(174,212,237,.14); background:rgba(3,10,17,.28); }
+    .physical-module-title { color:#dcecf7; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; margin-bottom:12px; }
+    .physical-check-row { display:flex; align-items:center; gap:9px; color:#c3d2de; font:11px "Space Grotesk",sans-serif; }
+    .physical-check-row input { accent-color:#79dfff; width:14px; height:14px; }
+    .adherence-value { color:#9deaff; font:500 24px "Space Grotesk",sans-serif; margin-top:10px; }
+    .adherence-caption,.workout-caption { color:#8199ac; font:8px "IBM Plex Mono",monospace; margin-top:5px; }
+    .physical-meter { height:3px; margin-top:9px; background:rgba(174,212,237,.15); }
+    .physical-meter-fill { height:100%; background:#79dfff; }
+    .workout-count { color:#e7f4fc; font:500 22px "Space Grotesk",sans-serif; margin:4px 0 9px; }
+    .workout-actions { display:flex; gap:8px; align-items:center; }
+    .workout-actions button { padding:8px 10px; color:#cbe9f8; border:1px solid rgba(125,207,241,.3); background:rgba(35,79,104,.2); font:8px "IBM Plex Mono",monospace; cursor:pointer; }
+    .workout-history { margin-top:10px; display:grid; gap:5px; color:#9eb2c2; font:8px "IBM Plex Mono",monospace; }
+    @media(max-width:650px) { .physical-execution-grid { grid-template-columns:1fr; } }
     @media(prefers-reduced-motion:reduce) { .dashboard::before { animation:none; } }
 
   </style>
@@ -1303,7 +1318,7 @@
       weightSummary.textContent="SAVED  "+record.weight.toFixed(1)+" LB  ·  "+taskDate.value;
     });
     taskDate.value = localDateString();
-    taskDate.addEventListener("change", () => { renderTasks(); renderAverages(); });
+    taskDate.addEventListener("change", () => { renderTasks(); renderAverages(); renderCampaign(); });
     logDayButton.addEventListener("click", () => {
       const date = taskDate.value;
       const record = recordFor(date);
@@ -1455,6 +1470,95 @@
       fill.style.width = progress + "%";
       track.append(fill);
       detail.append(track);
+      if (activeSector === "physical") {
+        const execution = document.createElement("section");
+        execution.className = "physical-execution";
+        const executionTitle = document.createElement("div");
+        executionTitle.className = "micro-label";
+        executionTitle.textContent = "DAILY EXECUTION / WEEKLY CONSISTENCY";
+        execution.append(executionTitle);
+        const grid = document.createElement("div");
+        grid.className = "physical-execution-grid";
+        const selectedDate = dateFromKey(taskDate.value || localDateString());
+        const weekStart = new Date(selectedDate);
+        weekStart.setDate(weekStart.getDate() - ((weekStart.getDay()+6)%7));
+        const dateKey = date => localDateString(date);
+        const weekDates = [];
+        for (let day = new Date(weekStart); day <= selectedDate; day.setDate(day.getDate()+1)) weekDates.push(dateKey(day));
+        const nutritionCard = document.createElement("article");
+        nutritionCard.className = "physical-module";
+        const nutritionTitle = document.createElement("div");
+        nutritionTitle.className = "physical-module-title";
+        nutritionTitle.textContent = "NUTRITION ADHERENCE";
+        const nutritionRecord = recordFor(taskDate.value);
+        const nutritionLabel = document.createElement("label");
+        nutritionLabel.className = "physical-check-row";
+        const nutritionCheck = document.createElement("input");
+        nutritionCheck.type = "checkbox";
+        nutritionCheck.checked = Boolean(nutritionRecord.nutritionFollowed);
+        nutritionCheck.addEventListener("change", () => {
+          nutritionRecord.nutritionFollowed = nutritionCheck.checked;
+          saveTaskData();
+          renderCampaign();
+        });
+        const nutritionText = document.createElement("span");
+        nutritionText.textContent = "Followed intended meal plan";
+        nutritionLabel.append(nutritionCheck,nutritionText);
+        const followedDays = weekDates.filter(date => Boolean(taskData[date] && taskData[date].nutritionFollowed)).length;
+        const adherence = weekDates.length ? Math.round(followedDays/weekDates.length*100) : 0;
+        const adherenceValue = document.createElement("div");
+        adherenceValue.className = "adherence-value";
+        adherenceValue.textContent = adherence + "%";
+        const adherenceBar = document.createElement("div");
+        adherenceBar.className = "physical-meter";
+        const adherenceFill = document.createElement("div");
+        adherenceFill.className = "physical-meter-fill";
+        adherenceFill.style.width = adherence + "%";
+        adherenceBar.append(adherenceFill);
+        const adherenceCaption = document.createElement("div");
+        adherenceCaption.className = "adherence-caption";
+        adherenceCaption.textContent = followedDays + " / " + weekDates.length + " DAYS FOLLOWED · WEEK TO DATE";
+        nutritionCard.append(nutritionTitle,nutritionLabel,adherenceValue,adherenceBar,adherenceCaption);
+        const workoutCard = document.createElement("article");
+        workoutCard.className = "physical-module";
+        const workoutTitle = document.createElement("div");
+        workoutTitle.className = "physical-module-title";
+        workoutTitle.textContent = "STRENGTH & CONDITIONING";
+        const sessions = weekDates.flatMap(date => (taskData[date] && Array.isArray(taskData[date].workouts) ? taskData[date].workouts.map(session => ({...session,date})) : []));
+        const workoutCount = document.createElement("div");
+        workoutCount.className = "workout-count";
+        workoutCount.textContent = sessions.length + " / 2 SESSIONS";
+        const workoutBar = document.createElement("div");
+        workoutBar.className = "physical-meter";
+        const workoutFill = document.createElement("div");
+        workoutFill.className = "physical-meter-fill";
+        workoutFill.style.width = Math.min(sessions.length/2*100,100) + "%";
+        workoutBar.append(workoutFill);
+        const workoutCaption = document.createElement("div");
+        workoutCaption.className = "workout-caption";
+        workoutCaption.textContent = sessions.length >= 2 ? "WEEKLY TARGET ACHIEVED" : (2-sessions.length) + " MORE TO REACH WEEKLY TARGET";
+        const workoutButton = document.createElement("button");
+        workoutButton.type = "button";
+        workoutButton.textContent = "+ LOG WORKOUT";
+        workoutButton.addEventListener("click", () => {
+          const record = recordFor(taskDate.value);
+          if (!Array.isArray(record.workouts)) record.workouts = [];
+          record.workouts.push({id:"workout-"+Date.now(),loggedAt:new Date().toISOString()});
+          saveTaskData();
+          renderCampaign();
+        });
+        const workoutHistory = document.createElement("div");
+        workoutHistory.className = "workout-history";
+        sessions.slice(-5).reverse().forEach(session => {
+          const line = document.createElement("div");
+          line.textContent = "✓  " + session.date;
+          workoutHistory.append(line);
+        });
+        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,workoutButton,workoutHistory);
+        grid.append(nutritionCard,workoutCard);
+        execution.append(grid);
+        detail.append(execution);
+      }
       sector.goals.forEach(goal => {
         const card = document.createElement("article");
         card.className = "goal-card";
