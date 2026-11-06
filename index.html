@@ -909,6 +909,36 @@
       .arc-nav { gap:18px; }
       .arc-nav a { padding-left:10px; font-size:8px; letter-spacing:.14em; }
     }
+    /* Execution-first desktop layout: checklist sits above the campaign map. */
+    @media(min-width:651px) {
+      .command-center { display:flex; flex-direction:column; }
+      .arc-header { width:100%; }
+      .arc-nav { order:2; flex-direction:row; padding:14px 0 0; gap:24px; }
+      .command-center > .command-grid {
+        order:3; width:100%; display:flex; flex-direction:column; gap:26px;
+      }
+      .command-grid > .board-wrap {
+        order:0; width:100%; padding:24px 0 26px; margin:0;
+        border:0; border-bottom:1px solid rgba(184,215,237,.16);
+        background:linear-gradient(180deg,rgba(3,9,15,.36),rgba(3,9,15,.08));
+      }
+      .command-grid > .map-column { order:1; width:100%; padding-top:10px; }
+      .board-wrap .task-panel {
+        display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+        column-gap:34px; align-items:start;
+      }
+      .board-wrap .task-panel > .panel-header:nth-of-type(1),
+      .board-wrap .task-panel > #dailyTasks { grid-column:1; }
+      .board-wrap .task-panel > .panel-header:nth-of-type(2),
+      .board-wrap .task-panel > #investingRow,
+      .board-wrap .task-panel > div:has(#investingInput) { grid-column:2; }
+      .board-wrap .task-panel > .panel-header:nth-of-type(3),
+      .board-wrap .task-panel > #dailyRating,
+      .board-wrap .task-panel > .rating-input-wrap { grid-column:1; }
+      .board-wrap .task-panel > .panel-header:nth-of-type(4),
+      .board-wrap .task-panel > #sideTasks,
+      .board-wrap .task-panel > div:has(#sideTaskInput) { grid-column:2; }
+    }
     @media(prefers-reduced-motion:reduce) { .dashboard::before { animation:none; } }
 
   </style>
