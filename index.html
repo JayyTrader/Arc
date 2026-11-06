@@ -939,6 +939,35 @@
       .board-wrap .task-panel > #sideTasks,
       .board-wrap .task-panel > div:has(#sideTaskInput) { grid-column:2; }
     }
+    /* Desktop composition: campaign map 80%, daily operations 20%, shared top edge. */
+    @media(min-width:651px) {
+      .command-center {
+        display:grid; grid-template-columns:120px minmax(0,1fr);
+        grid-template-rows:auto 1fr; column-gap:clamp(20px,2.5vw,40px);
+      }
+      .arc-header { grid-column:1/-1; grid-row:1; }
+      .arc-nav {
+        grid-column:1; grid-row:2; order:initial;
+        padding-top:52px; flex-direction:column; gap:22px;
+      }
+      .command-center > .command-grid {
+        grid-column:2; grid-row:2; order:initial; width:100%;
+        display:grid; grid-template-columns:minmax(0,4fr) minmax(230px,1fr);
+        gap:clamp(18px,2vw,32px); align-items:start;
+      }
+      .command-grid > .map-column {
+        grid-column:1; grid-row:1; order:initial;
+        width:auto; min-width:0; padding:38px 0 0;
+      }
+      .command-grid > .board-wrap {
+        grid-column:2; grid-row:1; order:initial;
+        width:auto; min-width:0; align-self:start;
+        margin:0; padding:38px 0 28px 20px;
+        border:0; border-left:1px solid rgba(184,215,237,.16);
+        border-bottom:0; background:linear-gradient(90deg,rgba(3,9,15,.12),rgba(3,9,15,.42));
+      }
+      .board-wrap .task-panel { display:block; }
+    }
     @media(prefers-reduced-motion:reduce) { .dashboard::before { animation:none; } }
 
   </style>
