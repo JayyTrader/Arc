@@ -1111,6 +1111,32 @@
       .map-column > .mission-card .mission-title { margin-top:22px !important; }
     }
 
+
+    /* Smooth ticker: keep the repeated strip on a dedicated compositor layer. */
+    .performance-strip { contain:layout paint; }
+    .ticker-track {
+      width:max-content;
+      display:flex;
+      flex-wrap:nowrap;
+      transform:translate3d(0,0,0);
+      backface-visibility:hidden;
+      will-change:transform;
+      animation:arcTicker 72s linear infinite;
+    }
+    .ticker-set {
+      display:flex;
+      flex:0 0 auto;
+      white-space:nowrap;
+    }
+    @keyframes arcTicker {
+      from { transform:translate3d(0,0,0); }
+      to { transform:translate3d(-50%,0,0); }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      .ticker-track { animation:none; transform:none; }
+      .ticker-set[aria-hidden="true"] { display:none; }
+    }
+
   </style>
 </head>
 <body>
