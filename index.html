@@ -939,7 +939,8 @@
       .board-wrap .task-panel > #dailyTasks { grid-column:1; }
       .board-wrap .task-panel > .panel-header:nth-of-type(2),
       .board-wrap .task-panel > #investingRow,
-      .board-wrap .task-panel > div:has(#investingInput) { grid-column:2; }
+      .board-wrap .task-panel > div:has(#investingInput),
+      .board-wrap .task-panel > #sdcaWeeklyRow { grid-column:2; }
       .board-wrap .task-panel > .panel-header:nth-of-type(3),
       .board-wrap .task-panel > #dailyRating,
       .board-wrap .task-panel > .rating-input-wrap { grid-column:1; }
@@ -1411,6 +1412,14 @@
             <button id="saveInvesting" type="button">Save task</button>
           </div>
         </div>
+        <div class="task-row" id="sdcaWeeklyRow">
+          <input class="task-check" type="checkbox" id="sdcaWeeklyCheck" aria-label="Mark weekly SDCA system update complete" />
+          <div class="task-copy">
+            <div class="task-name">Update SDCA system</div>
+            <div class="task-time">Weekly system review · Sunday</div>
+          </div>
+          <span class="task-tag">Weekly</span>
+        </div>
         <div class="panel-header">Daily Performance Rating</div>
         <div class="rating-input-wrap">
           <label for="dailyRating">Rate today / 1–10</label>
@@ -1475,6 +1484,7 @@
     const investingRow = document.getElementById("investingRow");
     const investingName = document.getElementById("investingName");
     const investingInput = document.getElementById("investingInput");
+    const sdcaWeeklyCheck = document.getElementById("sdcaWeeklyCheck");
     const logDayButton = document.getElementById("logDay");
     const logStatus = document.getElementById("logStatus");
     const sideTasksEl = document.getElementById("sideTasks");
@@ -1537,6 +1547,10 @@
     function renderTasks() {
       const date = taskDate.value;
       const record = recordFor(date);
+      const selectedDay = dateFromKey(date);
+      selectedDay.setDate(selectedDay.getDate() + ((7 - selectedDay.getDay()) % 7));
+      const sundayRecord = taskData[localDateString(selectedDay)] || {};
+      sdcaWeeklyCheck.checked = Boolean(sundayRecord.sdcaUpdated);
       dailyTasksEl.replaceChildren();
       defaultTasks.forEach((task) => {
         const row = document.createElement("label");
@@ -1632,6 +1646,14 @@
       weightSummary.textContent="SAVED  "+record.weight.toFixed(1)+" LB  ·  "+taskDate.value;
     });
     taskDate.value = localDateString();
+    sdcaWeeklyCheck.addEventListener("change", () => {
+      const selectedDay = dateFromKey(taskDate.value);
+      selectedDay.setDate(selectedDay.getDate() + ((7 - selectedDay.getDay()) % 7));
+      const sundayRecord = recordFor(localDateString(selectedDay));
+      sundayRecord.sdcaUpdated = sdcaWeeklyCheck.checked;
+      saveTaskData();
+      renderTasks();
+    });
     taskDate.addEventListener("change", () => { renderTasks(); renderAverages(); renderCampaign(); });
     logDayButton.addEventListener("click", () => {
       const date = taskDate.value;
