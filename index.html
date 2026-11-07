@@ -1087,6 +1087,7 @@
         align-items:start !important;
         gap:clamp(28px,4vw,64px) !important;
         margin-top:clamp(55px,7vh,90px) !important;
+        min-height:max(1180px,100vh) !important;
       }
       .command-grid > .map-column,
       .command-grid > .board-wrap {
@@ -1095,7 +1096,12 @@
         margin-top:0 !important;
       }
       .command-grid > .map-column { padding:0 !important; min-width:0; }
-      .command-grid > .board-wrap { padding:0 0 28px 20px !important; }
+      .command-grid > .board-wrap {
+        padding:0 20px 28px !important;
+        border-right:1px solid rgba(184,215,237,.16) !important;
+        border-left:1px solid rgba(184,215,237,.16) !important;
+        box-sizing:border-box;
+      }
       .map-column > .mission-card {
         display:block !important;
         width:100% !important;
