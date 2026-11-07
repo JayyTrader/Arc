@@ -556,8 +556,9 @@
     .command-grid > .board-wrap {
       grid-column:2; grid-row:3 / span 4;
       align-self:stretch; min-width:0;
-      padding:0 0 0 clamp(24px,3vw,44px);
+      padding:0 clamp(24px,3vw,44px);
       border-left:1px solid rgba(174,204,231,.16);
+      border-right:1px solid rgba(174,204,231,.16);
     }
     .board-wrap .board-topline { margin:0 0 30px; }
     .board-heading { font-size:clamp(29px,3.4vw,43px); letter-spacing:-.065em; }
@@ -835,7 +836,7 @@
     .milestone-list { gap:9px; }
     .goal-progress { color:#839bad; }
     .command-grid > .board-wrap {
-      min-width:0; padding:38px 0 30px 25px; border:0; border-left:1px solid rgba(184,215,237,.16);
+      min-width:0; padding:38px 25px 30px 25px; border:0; border-left:1px solid rgba(184,215,237,.16); border-right:1px solid rgba(184,215,237,.16);
       align-self:stretch; background:linear-gradient(90deg,rgba(3,9,15,.12),rgba(3,9,15,.42));
     }
     .board-wrap .board-topline { margin:0 0 18px; color:#a8bdce; font-size:9px; letter-spacing:.2em; }
