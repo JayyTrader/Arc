@@ -1283,6 +1283,17 @@
     .notes-wrap textarea::placeholder { color:#617487; }
     .notes-footer { display:flex; justify-content:space-between; gap:12px; margin-top:9px; color:#71869a; font:9px "IBM Plex Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
     @media (max-width:600px) { .notes-wrap { padding:15px; } }
+    .scratchpad-panel {
+      margin: 24px 0 28px;
+      border: 1px solid rgba(174,204,231,.16);
+      background: rgba(9,14,20,.78);
+    }
+    .scratchpad-panel .notes-wrap { padding: 14px 18px 15px; }
+    .scratchpad-panel textarea { min-height: 104px; }
+    @media (max-width:600px) {
+      .scratchpad-panel { margin: 20px 0 24px; }
+      .scratchpad-panel .notes-wrap { padding: 12px; }
+    }
 </style>
 </head>
 <body>
@@ -1363,6 +1374,13 @@
           <div class="board-topline"><span>Daily Operations</span><span>Execution Log</span></div>
       <h2 class="board-heading">Daily Task Board</h2>
       <p class="board-subtitle">Execute the fundamentals. Record the work.</p>
+      <section class="scratchpad-panel" aria-label="Idea pad">
+        <div class="panel-header">Idea Pad</div>
+        <div class="notes-wrap">
+          <textarea id="dailyNotes" maxlength="5000" rows="4" placeholder="Jot down ideas, reminders, or things to revisit..."></textarea>
+          <div class="notes-footer"><span>Personal scratchpad · saves automatically</span><span id="notesCount">0 / 5000</span></div>
+        </div>
+      </section>
       <div class="board-controls">
         <label class="date-control">Active date <input type="date" id="taskDate" /></label>
         <span class="progress-label" id="progressLabel">0 / 5 COMPLETE</span>
@@ -1406,11 +1424,6 @@
             <input id="sideTaskInput" type="text" maxlength="120" aria-label="One-time side task" placeholder="Add a task for this date only..." />
             <button id="saveSideTask" type="button">Add task</button>
           </div>
-        </div>
-        <div class="panel-header">Daily Notes</div>
-        <div class="notes-wrap">
-          <textarea id="dailyNotes" maxlength="5000" rows="6" placeholder="Record thoughts, observations, wins, lessons, or anything worth remembering..."></textarea>
-          <div class="notes-footer"><span>Saved automatically by date</span><span id="notesCount">0 / 5000</span></div>
         </div>
       </section>
       <button class="log-day" id="logDay" type="button">Confirm &amp; Log Day →</button>
@@ -1524,12 +1537,6 @@
     function renderTasks() {
       const date = taskDate.value;
       const record = recordFor(date);
-      const notesField = document.getElementById("dailyNotes");
-      const notesCount = document.getElementById("notesCount");
-      if (notesField) {
-        notesField.value = record.notes || "";
-        if (notesCount) notesCount.textContent = notesField.value.length + " / 5000";
-      }
       dailyTasksEl.replaceChildren();
       defaultTasks.forEach((task) => {
         const row = document.createElement("label");
@@ -2095,11 +2102,24 @@
     });
     const dailyNotes = document.getElementById("dailyNotes");
     const notesCount = document.getElementById("notesCount");
+    const SCRATCHPAD_KEY = "winterArcScratchpadV1";
+    // Preserve any notes already entered in the former date-based notes section.
+    let scratchpadText = localStorage.getItem(SCRATCHPAD_KEY);
+    if (scratchpadText === null) {
+      const previousNotes = Object.entries(taskData)
+        .filter(([,record]) => record && typeof record.notes === "string" && record.notes.trim())
+        .sort(([a],[b]) => a.localeCompare(b))
+        .map(([date,record]) => date + "\n" + record.notes);
+      scratchpadText = previousNotes.join("\n\n");
+      if (scratchpadText) localStorage.setItem(SCRATCHPAD_KEY, scratchpadText);
+    }
+    dailyNotes.value = scratchpadText || "";
+    if (notesCount) notesCount.textContent = dailyNotes.value.length + " / 5000";
     dailyNotes.addEventListener("input", () => {
-      const record = recordFor(taskDate.value);
-      record.notes = dailyNotes.value;
+      scratchpadText = dailyNotes.value;
       if (notesCount) notesCount.textContent = dailyNotes.value.length + " / 5000";
-      saveTaskData();
+      try { localStorage.setItem(SCRATCHPAD_KEY, scratchpadText); }
+      catch (error) { console.warn("Could not save the idea pad in this browser.", error); }
     });
     renderTasks();
     renderAverages();
