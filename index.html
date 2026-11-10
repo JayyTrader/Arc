@@ -1804,6 +1804,10 @@
       const tickerTraining = document.getElementById("tickerTraining");
       if (tickerNutrition) tickerNutrition.textContent = lifetimeNutrition;
       if (tickerTraining) tickerTraining.textContent = lifetimeTraining;
+      document.querySelectorAll("[data-mirror]").forEach(node => {
+        const source = document.getElementById(node.dataset.mirror);
+        if (source) node.textContent = source.textContent;
+      });
 
       const physical = sectorProgress("physical");
       const financial = sectorProgress("financial");
