@@ -1766,7 +1766,7 @@
       // Moving ticker shows cumulative adherence from the first recorded entry through today.
       const todayKey = localDateString();
       const datedRecords = Object.keys(taskData)
-        .filter(key => /^\\d{4}-\\d{2}-\\d{2}$/.test(key) && key <= todayKey)
+        .filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key) && key <= todayKey)
         .sort();
       const nutritionDates = datedRecords.filter(key =>
         Object.prototype.hasOwnProperty.call(taskData[key] || {}, "nutritionFollowed")
