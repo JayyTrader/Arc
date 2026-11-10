@@ -992,6 +992,18 @@
     .physical-execution-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
     .physical-module { min-width:0; padding:15px; border:1px solid rgba(174,212,237,.14); background:rgba(3,10,17,.28); }
     .physical-module-title { color:#dcecf7; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; margin-bottom:12px; }
+    .fasting-protocol {
+      position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin:0 0 17px; padding:13px 14px; border:1px solid rgba(121,223,255,.28);
+      background:linear-gradient(110deg,rgba(18,54,72,.42),rgba(5,15,23,.72) 72%);
+      box-shadow:inset 3px 0 0 rgba(121,223,255,.72),0 8px 24px rgba(0,0,0,.16);
+    }
+    .fasting-protocol::after { content:""; position:absolute; width:110px; height:110px; right:-45px; top:-62px; border-radius:50%; background:rgba(91,207,244,.1); filter:blur(22px); pointer-events:none; }
+    .fasting-ratio { color:#a9eaff; font:600 20px "Space Grotesk",sans-serif; letter-spacing:.02em; white-space:nowrap; }
+    .fasting-details { display:grid; gap:4px; text-align:right; }
+    .fasting-label { color:#8bdfff; font:8px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
+    .fasting-window { color:#c3d4df; font:10px "IBM Plex Mono",monospace; letter-spacing:.04em; }
+    @media(max-width:420px) { .fasting-protocol { padding:11px 10px; } .fasting-ratio { font-size:18px; } .fasting-window { font-size:9px; } }
     .physical-check-row { display:flex; align-items:center; gap:9px; color:#c3d2de; font:11px "Space Grotesk",sans-serif; }
     .physical-check-row input { accent-color:#79dfff; width:14px; height:14px; }
     .adherence-value { color:#9deaff; font:500 24px "Space Grotesk",sans-serif; margin-top:10px; }
@@ -1870,6 +1882,9 @@
         const nutritionTitle = document.createElement("div");
         nutritionTitle.className = "physical-module-title";
         nutritionTitle.textContent = "NUTRITION ADHERENCE";
+        const fastingProtocol = document.createElement("div");
+        fastingProtocol.className = "fasting-protocol";
+        fastingProtocol.innerHTML = '<div class="fasting-ratio">18<span style="color:#6f91a6;font-size:13px"> : </span>6</div><div class="fasting-details"><div class="fasting-label">FASTING PROTOCOL</div><div class="fasting-window">2:00 PM — 8:00 PM EATING WINDOW</div></div>';
         const nutritionDays = [];
         for (let offset = 0; offset < 7; offset++) {
           const date = new Date(weekStart);
@@ -1936,7 +1951,7 @@
             nutritionHistory.append(line);
           }
         }
-        nutritionCard.append(nutritionTitle,nutritionChecks,adherenceValue,adherenceBar,adherenceCaption,nutritionHistory);
+        nutritionCard.append(nutritionTitle,fastingProtocol,nutritionChecks,adherenceValue,adherenceBar,adherenceCaption,nutritionHistory);
         const workoutCard = document.createElement("article");
         workoutCard.className = "physical-module";
         const workoutTitle = document.createElement("div");
