@@ -1763,6 +1763,48 @@
       return goals.length ? goals.reduce((sum,goal) => sum + goalProgress(goal),0) / goals.length : 0;
     }
     function renderCampaign() {
+      // Moving ticker shows cumulative adherence from the first recorded entry through today.
+      const todayKey = localDateString();
+      const datedRecords = Object.keys(taskData)
+        .filter(key => /^\\d{4}-\\d{2}-\\d{2}$/.test(key) && key <= todayKey)
+        .sort();
+      const nutritionDates = datedRecords.filter(key =>
+        Object.prototype.hasOwnProperty.call(taskData[key] || {}, "nutritionFollowed")
+      );
+      let lifetimeNutrition = "—";
+      if (nutritionDates.length) {
+        const start = dateFromKey(nutritionDates[0]);
+        const end = dateFromKey(todayKey);
+        const totalDays = Math.max(0, Math.round((end - start) / 86400000) + 1);
+        const followedDays = datedRecords.filter(key =>
+          key >= nutritionDates[0] && Boolean(taskData[key] && taskData[key].nutritionFollowed)
+        ).length;
+        lifetimeNutrition = Math.round(followedDays / totalDays * 100) + "%";
+      }
+      const trainingDates = datedRecords.filter(key => {
+        const record = taskData[key] || {};
+        return Object.prototype.hasOwnProperty.call(record, "workoutDone") ||
+          (Array.isArray(record.workouts) && record.workouts.length > 0);
+      });
+      let lifetimeTraining = "—";
+      if (trainingDates.length) {
+        const start = dateFromKey(trainingDates[0]);
+        const end = dateFromKey(todayKey);
+        let scheduled = 0;
+        let completed = 0;
+        for (let day = new Date(start); day <= end; day.setDate(day.getDate() + 1)) {
+          if (day.getDay() !== 2 && day.getDay() !== 5) continue;
+          scheduled++;
+          const record = taskData[localDateString(day)] || {};
+          if (record.workoutDone || (Array.isArray(record.workouts) && record.workouts.length > 0)) completed++;
+        }
+        if (scheduled) lifetimeTraining = Math.round(completed / scheduled * 100) + "%";
+      }
+      const tickerNutrition = document.getElementById("tickerNutrition");
+      const tickerTraining = document.getElementById("tickerTraining");
+      if (tickerNutrition) tickerNutrition.textContent = lifetimeNutrition;
+      if (tickerTraining) tickerTraining.textContent = lifetimeTraining;
+
       const physical = sectorProgress("physical");
       const financial = sectorProgress("financial");
       const overall = (physical + financial) / 2;
@@ -1864,8 +1906,6 @@
         const adherenceCaption = document.createElement("div");
         adherenceCaption.className = "adherence-caption";
         adherenceCaption.textContent = followedDays + " / 7 DAYS FOLLOWED · SELECTED WEEK";
-        const tickerNutrition = document.getElementById("tickerNutrition");
-        if (tickerNutrition) tickerNutrition.textContent = adherence + "%";
         const nutritionHistory = document.createElement("div");
         nutritionHistory.className = "workout-history";
         const nutritionHistoryTitle = document.createElement("div");
@@ -1923,8 +1963,6 @@
         const workoutCaption = document.createElement("div");
         workoutCaption.className = "workout-caption";
         workoutCaption.textContent = Math.round(completedSlots / 2 * 100) + "% WEEKLY ADHERENCE";
-        const tickerTraining = document.getElementById("tickerTraining");
-        if (tickerTraining) tickerTraining.textContent = Math.round(completedSlots / 2 * 100) + "%";
         const schedule = document.createElement("div");
         schedule.className = "workout-schedule";
         workoutSlots.forEach(slot => {
