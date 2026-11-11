@@ -1314,13 +1314,11 @@
     .bottom-scratchpad .notes-wrap { padding:20px 22px 18px; }
     .financial-ladder-panel {
       width:min(100%,1320px); margin:34px auto 28px; grid-column:1 / -1;
-      border:1px solid rgba(125,205,239,.2);
-      background:linear-gradient(145deg,rgba(9,17,26,.94),rgba(3,8,13,.88));
-      box-shadow:0 18px 48px rgba(0,0,0,.24);
+      border:0; background:transparent; box-shadow:none;
     }
     .financial-ladder-heading {
       display:flex; align-items:center; justify-content:space-between; gap:14px;
-      padding:17px 20px; border-bottom:1px solid rgba(125,205,239,.14);
+      padding:14px 0; border:0;
     }
     .financial-ladder-heading strong {
       color:#c8eaff; font:600 12px "IBM Plex Mono",monospace;
@@ -1330,9 +1328,14 @@
       color:#718da3; font:9px "IBM Plex Mono",monospace;
       letter-spacing:.12em; text-transform:uppercase;
     }
-    .financial-ladder-image { display:block; width:100%; height:auto; max-height:1000px; object-fit:contain; background:#03080e; }
+    .financial-ladder-image { display:block; width:100%; height:auto; max-height:1000px; object-fit:contain; background:transparent; border:0; box-shadow:none; }
+    .map-scratchpad { margin:42px 0 24px; border:0; border-top:1px solid rgba(150,183,207,.13); background:transparent; }
+    .map-scratchpad .panel-header { padding:16px 0 10px; border:0; color:#a9c4d8; }
+    .map-scratchpad .notes-wrap { padding:8px 0 0; }
+    .map-scratchpad textarea { min-height:180px; background:rgba(3,8,14,.34); border-color:rgba(150,183,207,.14); }
     @media(max-width:600px) {
       .financial-ladder-panel { margin:24px 0 20px; }
+      .map-scratchpad { margin:30px 0 20px; }
       .financial-ladder-heading { padding:14px; align-items:flex-start; flex-direction:column; gap:6px; }
     }
     .bottom-scratchpad textarea { display:block; width:100%; min-height:260px; resize:vertical; padding:16px; color:#dceeff; background:rgba(3,8,13,.82); border:1px solid rgba(169,215,255,.2); font:13px/1.65 "Space Grotesk",sans-serif; }
@@ -1416,6 +1419,13 @@
             </button>
           </div>
           <section class="sector-detail" id="sectorDetail" aria-live="polite"><span id="campaignProgress"></span></section>
+          <section class="scratchpad-panel map-scratchpad" aria-label="Idea pad">
+            <div class="panel-header">Idea Pad</div>
+            <div class="notes-wrap">
+              <textarea id="dailyNotes" maxlength="5000" rows="8" placeholder="Jot down ideas, reminders, or things to revisit..."></textarea>
+              <div class="notes-footer"><span>Personal scratchpad · saves automatically</span><span id="notesCount">0 / 5000</span></div>
+            </div>
+          </section>
         </section>
         <section class="board-wrap" id="dailyOperations" aria-label="Daily execution">
           <div class="board-topline"><span>Daily Operations</span><span>Execution Log</span></div>
@@ -1478,13 +1488,6 @@
           <span>Long-term progression / 01–08</span>
         </div>
         <img class="financial-ladder-image" src="./Winter%20Financial%20Freedom%20Ladder.png" alt="Winter Financial Freedom Ladder showing eight stages from a starter emergency fund to debt freedom" loading="lazy" />
-      </section>
-      <section class="scratchpad-panel bottom-scratchpad" aria-label="Idea pad">
-        <div class="panel-header">Idea Pad</div>
-        <div class="notes-wrap">
-          <textarea id="dailyNotes" maxlength="5000" rows="10" placeholder="Jot down ideas, reminders, or things to revisit..."></textarea>
-          <div class="notes-footer"><span>Personal scratchpad · saves automatically</span><span id="notesCount">0 / 5000</span></div>
-        </div>
       </section>
     </section>
   </main>
