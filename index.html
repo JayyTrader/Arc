@@ -387,6 +387,15 @@
     @media(max-width:420px) { .exercise-log { margin-left:8px; } .exercise-log-heading,.exercise-log-row { grid-template-columns:minmax(0,1fr) 62px 62px; gap:5px; } }
     .workout-history-title { margin:13px 0 7px; color:#83a3bd; font:9px "IBM Plex Mono",monospace; letter-spacing:.13em; }
     .workout-history { display:grid; gap:5px; margin-top:12px; color:#71869a; font:9px "IBM Plex Mono",monospace; }
+    .workload-panel { margin:18px 0 12px; padding:14px 12px 12px; border:1px solid rgba(145,180,204,.14); background:rgba(4,10,16,.42); }
+    .workload-title { color:#a9c4d8; font:600 10px "IBM Plex Mono",monospace; letter-spacing:.13em; }
+    .workload-subtitle { margin-top:5px; color:#6e8498; font:8px/1.6 "IBM Plex Mono",monospace; }
+    .workload-chart { display:block; width:100%; height:auto; overflow:visible; margin-top:10px; }
+    .workload-legend { display:flex; flex-wrap:wrap; gap:8px 13px; margin-top:9px; }
+    .workload-legend-item { display:flex; align-items:center; gap:5px; color:#9aafc1; font:8px "IBM Plex Mono",monospace; }
+    .workload-legend-swatch { width:13px; height:3px; border-radius:2px; flex:0 0 auto; }
+    .workload-empty { padding:18px 4px; color:#72899d; font:9px/1.6 "IBM Plex Mono",monospace; }
+    .workload-note { margin-top:8px; color:#657c90; font:7px/1.6 "IBM Plex Mono",monospace; }
     .board-wrap { width:100%; margin:0; padding:0 0 56px; }
     .board-heading { margin:0 0 8px; font-size:clamp(1.7rem,3vw,2.2rem); }
     .board-topline { margin-bottom:25px; }
@@ -2107,6 +2116,94 @@
           });
           schedule.append(exerciseLog);
         });
+        // Weekly exercise workload chart: weight × duration, summed by exercise and week.
+        const workloadPanel = document.createElement("section");
+        workloadPanel.className = "workload-panel";
+        const workloadTitle = document.createElement("div");
+        workloadTitle.className = "workload-title";
+        workloadTitle.textContent = "WEEKLY TRAINING WORKLOAD";
+        const workloadSubtitle = document.createElement("div");
+        workloadSubtitle.className = "workload-subtitle";
+        workloadSubtitle.textContent = "AGGREGATE LOAD + INDIVIDUAL EXERCISE TRENDS · LB-MIN";
+        workloadPanel.append(workloadTitle,workloadSubtitle);
+        const workloadNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
+        const workloadColors = ["#83d7ff","#f2b766","#a9a0ff","#75d6b1","#ff8f9b","#dceeff"];
+        const weeklyLoads = new Map();
+        Object.entries(taskData).forEach(([date,record]) => {
+          if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || !record || !record.exerciseMetrics) return;
+          const metrics = record.exerciseMetrics;
+          const values = workloadNames.map(name => {
+            const metric = metrics[name] || {};
+            const weight = Number(metric.weight);
+            const time = Number(metric.time);
+            return Number.isFinite(weight) && weight > 0 && Number.isFinite(time) && time > 0 ? weight * time : 0;
+          });
+          if (!values.some(value => value > 0)) return;
+          const day = dateFromKey(date);
+          const monday = new Date(day);
+          monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+          const weekKey = dateKey(monday);
+          if (!weeklyLoads.has(weekKey)) weeklyLoads.set(weekKey,[0,0,0,0,0]);
+          const totals = weeklyLoads.get(weekKey);
+          values.forEach((value,index) => totals[index] += value);
+        });
+        const workloadWeeks = [...weeklyLoads.entries()].sort((a,b) => a[0].localeCompare(b[0])).slice(-12);
+        if (!workloadWeeks.length) {
+          const empty = document.createElement("div");
+          empty.className = "workload-empty";
+          empty.textContent = "NO EXERCISE METRICS LOGGED YET. ENTER WEIGHT AND TIME TO START BUILDING YOUR WEEKLY TREND.";
+          workloadPanel.append(empty);
+        } else {
+          const aggregate = workloadWeeks.map(([,values]) => values.reduce((sum,value) => sum + value,0));
+          const series = [{name:"TOTAL WORKLOAD",values:aggregate,color:workloadColors[5],width:3.5},...workloadNames.map((name,index)=>({name,values:workloadWeeks.map(([,values])=>values[index]),color:workloadColors[index],width:1.8}))];
+          const svgNS = "http://www.w3.org/2000/svg";
+          const svg = document.createElementNS(svgNS,"svg");
+          svg.setAttribute("class","workload-chart");
+          svg.setAttribute("viewBox","0 0 760 300");
+          svg.setAttribute("role","img");
+          svg.setAttribute("aria-label","Weekly workload line chart showing total workload and each exercise in pound-minutes");
+          const left=58,right=738,top=18,bottom=238;
+          const maxValue=Math.max(1,...aggregate);
+          const axisMax=Math.ceil(maxValue/500)*500 || 500;
+          const xAt=index => workloadWeeks.length===1 ? (left+right)/2 : left+index*(right-left)/(workloadWeeks.length-1);
+          const yAt=value => bottom-(value/axisMax)*(bottom-top);
+          const addSvg=(tag,attrs,textValue) => {
+            const node=document.createElementNS(svgNS,tag);
+            Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));
+            if (textValue!==undefined) node.textContent=textValue;
+            svg.append(node); return node;
+          };
+          for(let tick=0;tick<=4;tick++){
+            const value=axisMax*tick/4, y=yAt(value);
+            addSvg("line",{x1:left,y1:y,x2:right,y2:y,stroke:"rgba(150,183,207,.15)","stroke-width":1});
+            addSvg("text",{x:left-9,y:y+3,"text-anchor":"end",fill:"#71869a","font-size":10,"font-family":"IBM Plex Mono, monospace"},Math.round(value).toLocaleString());
+          }
+          addSvg("line",{x1:left,y1:bottom,x2:right,y2:bottom,stroke:"rgba(150,183,207,.3)","stroke-width":1});
+          workloadWeeks.forEach(([week],index)=>{
+            if(workloadWeeks.length>8 && index%2!==0 && index!==workloadWeeks.length-1) return;
+            const label=week.slice(5);
+            addSvg("text",{x:xAt(index),y:bottom+20,"text-anchor":"middle",fill:"#71869a","font-size":10,"font-family":"IBM Plex Mono, monospace"},label);
+          });
+          series.forEach(item=>{
+            const points=item.values.map((value,index)=>xAt(index)+","+yAt(value)).join(" ");
+            addSvg("polyline",{points,fill:"none",stroke:item.color,"stroke-width":item.width,"stroke-linecap":"round","stroke-linejoin":"round",opacity:item.name==="TOTAL WORKLOAD"?1:.88});
+            item.values.forEach((value,index)=>addSvg("circle",{cx:xAt(index),cy:yAt(value),r:item.name==="TOTAL WORKLOAD"?4:2.8,fill:item.color,stroke:"#071019","stroke-width":1}));
+          });
+          workloadPanel.append(svg);
+          const legend=document.createElement("div");
+          legend.className="workload-legend";
+          series.forEach(item=>{
+            const entry=document.createElement("div"); entry.className="workload-legend-item";
+            const swatch=document.createElement("span"); swatch.className="workload-legend-swatch"; swatch.style.background=item.color;
+            const label=document.createElement("span"); label.textContent=item.name;
+            entry.append(swatch,label); legend.append(entry);
+          });
+          workloadPanel.append(legend);
+          const note=document.createElement("div");
+          note.className="workload-note";
+          note.textContent="WEEKLY VALUES SUM WEIGHT × MINUTES FOR LOGGED EXERCISES. MISSING ENTRIES COUNT AS ZERO; TOTAL IS THE SUM OF THE FIVE EXERCISES.";
+          workloadPanel.append(note);
+        }
         const workoutHistory = document.createElement("div");
         workoutHistory.className = "workout-history";
         const historyTitle = document.createElement("div");
@@ -2137,7 +2234,7 @@
           line.textContent = week.startString + " — " + week.endString + " · " + week.done + "/2 · " + Math.round(week.done/2*100) + "%";
           workoutHistory.append(line);
         });
-        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,schedule,workoutHistory);
+        workoutCard.append(workoutTitle,workoutCount,workoutBar,workoutCaption,schedule,workloadPanel,workoutHistory);
         grid.append(nutritionCard,workoutCard);
         execution.append(grid);
         detail.append(execution);
