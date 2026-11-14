@@ -2130,7 +2130,7 @@
         const workloadColors = ["#83d7ff","#f2b766","#a9a0ff","#75d6b1","#ff8f9b","#dceeff"];
         const weeklyLoads = new Map();
         Object.entries(taskData).forEach(([date,record]) => {
-          if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || !record || !record.exerciseMetrics) return;
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !record || !record.exerciseMetrics) return;
           const metrics = record.exerciseMetrics;
           const values = workloadNames.map(name => {
             const metric = metrics[name] || {};
