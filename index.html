@@ -2080,6 +2080,10 @@
           exerciseLog.append(exerciseHeading);
           const exerciseNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
           const savedMetrics = (taskData[slot.date] && taskData[slot.date].exerciseMetrics) || {};
+          const status = document.createElement("div");
+          status.className = "exercise-log-status";
+          status.textContent = "WEIGHT AND DURATION SAVE AUTOMATICALLY";
+          exerciseLog.append(status);
           exerciseNames.forEach(exerciseName => {
             const row = document.createElement("div");
             row.className = "exercise-log-row";
@@ -2113,17 +2117,11 @@
               saveTaskData();
               status.textContent = "SAVED · " + slot.date;
             };
-            const status = document.createElement("div");
-            status.className = "exercise-log-status";
             weightInput.addEventListener("change",saveMetric);
             timeInput.addEventListener("change",saveMetric);
             row.append(name,weightInput,timeInput);
             exerciseLog.append(row);
           });
-          const status = document.createElement("div");
-          status.className = "exercise-log-status";
-          status.textContent = "WEIGHT AND DURATION SAVE AUTOMATICALLY";
-          exerciseLog.append(status);
           schedule.append(exerciseLog);
         });
         const workoutHistory = document.createElement("div");
