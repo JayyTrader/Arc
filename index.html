@@ -1106,6 +1106,10 @@
         align-self:start !important;
         margin-top:0 !important;
       }
+      .command-grid > .financial-ladder-panel {
+        grid-column:2 !important; grid-row:2 !important;
+        align-self:start !important; width:100%; margin:8px 0 0;
+      }
       .command-grid > .map-column { padding:0 !important; min-width:0; }
       .command-grid > .board-wrap {
         padding:0 20px 28px !important;
@@ -1341,6 +1345,7 @@
     @media(max-width:600px) {
       .financial-ladder-panel { margin:18px 0 0; padding-top:10px; }
       .financial-ladder-image { max-height:120px; }
+      .command-grid > .financial-ladder-panel { grid-column:1; grid-row:auto; }
       .map-scratchpad { margin:30px 0 20px; }
       .financial-ladder-heading { padding:14px; align-items:flex-start; flex-direction:column; gap:6px; }
     }
@@ -1486,13 +1491,14 @@
       <button class="log-day" id="logDay" type="button">Confirm &amp; Log Day →</button>
       <div class="log-status" id="logStatus" aria-live="polite"></div>
       <p class="board-foot">COMPLETIONS AND RATINGS SAVE BY DATE. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
-        <section class="financial-ladder-panel" aria-label="Winter financial freedom ladder">
+
+        </section>
+      <section class="financial-ladder-panel" aria-label="Winter financial freedom ladder">
           <div class="financial-ladder-heading">
             <strong>Financial Freedom Ladder</strong>
             <span>Long-term progression / 01–08</span>
           </div>
           <img class="financial-ladder-image" src="./Winter%20Financial%20Freedom%20Ladder.png" alt="Winter Financial Freedom Ladder showing eight stages from a starter emergency fund to debt freedom" loading="lazy" />
-        </section>
         </section>
       </div>
 
