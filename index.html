@@ -1780,11 +1780,9 @@
         ]
       },
       financial: {
-        title:"FINANCIAL", description:"Build financial security through disciplined investing, education, and debt elimination.",
+        title:"FINANCIAL", description:"Build financial capability through disciplined investing and education.",
         goals:[
           {id:"campus",title:"Become an Investing Master",description:"Progress through the Investing Campus curriculum and develop systems to an operational standard.",milestones:["Level 1 — SDCA (completed)","Level 1.5 — LTPI","Level 2 — MTPI","Level 3 — RSPS","Level 4 — Strategy Development","Level 5 — SOPS","Investing Autopsy Course"]}
-          ,
-          {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan","Pay off the targeted debt"]}
         ]
       }
     };
@@ -1796,7 +1794,7 @@
         for (const key of ["physical","financial"]) {
           if (!saved.sectors[key]) saved.sectors[key] = structuredClone(defaultCampaign[key]);
         }
-        saved.sectors.financial.goals = (saved.sectors.financial.goals || []).filter(goal => goal.id !== "macro");
+        saved.sectors.financial.goals = (saved.sectors.financial.goals || []).filter(goal => goal.id !== "macro" && goal.id !== "debt");
         // Keep the Financial Freedom Ladder standalone and outside Winter Arc progression.
         const oldLadder = saved.sectors.financial.goals.find(goal => goal.id === "freedom-ladder");
         const ladderKey = "winterArcFinancialFreedomLadderV1";
