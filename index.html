@@ -1313,28 +1313,34 @@
     .bottom-scratchpad { width:min(100%,1320px); margin:38px auto 30px; grid-column:1 / -1; justify-self:center; }
     .bottom-scratchpad .notes-wrap { padding:20px 22px 18px; }
     .financial-ladder-panel {
-      width:min(100%,1320px); margin:34px auto 28px; grid-column:1 / -1;
-      border:0; background:transparent; box-shadow:none;
+      width:100%; max-width:100%; margin:22px 0 0; padding-top:12px;
+      border:0; border-top:1px solid rgba(150,183,207,.12);
+      background:transparent; box-shadow:none; box-sizing:border-box;
     }
     .financial-ladder-heading {
-      display:flex; align-items:center; justify-content:space-between; gap:14px;
-      padding:14px 0; border:0;
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      padding:0 0 8px; border:0;
     }
     .financial-ladder-heading strong {
-      color:#c8eaff; font:600 12px "IBM Plex Mono",monospace;
-      letter-spacing:.16em; text-transform:uppercase;
+      color:#9dbbd0; font:600 8px "IBM Plex Mono",monospace;
+      letter-spacing:.13em; text-transform:uppercase;
     }
     .financial-ladder-heading span {
-      color:#718da3; font:9px "IBM Plex Mono",monospace;
-      letter-spacing:.12em; text-transform:uppercase;
+      color:#647d91; font:7px "IBM Plex Mono",monospace;
+      letter-spacing:.1em; text-transform:uppercase;
     }
-    .financial-ladder-image { display:block; width:100%; height:auto; max-height:1000px; object-fit:contain; background:transparent; border:0; box-shadow:none; }
+    .financial-ladder-image {
+      display:block; width:100%; max-width:100%; height:auto; max-height:150px;
+      object-fit:contain; object-position:left top; background:transparent;
+      border:0; box-shadow:none;
+    }
     .map-scratchpad { margin:42px 0 24px; border:0; border-top:1px solid rgba(150,183,207,.13); background:transparent; }
     .map-scratchpad .panel-header { padding:16px 0 10px; border:0; color:#a9c4d8; }
     .map-scratchpad .notes-wrap { padding:8px 0 0; }
     .map-scratchpad textarea { min-height:180px; background:rgba(3,8,14,.34); border-color:rgba(150,183,207,.14); }
     @media(max-width:600px) {
-      .financial-ladder-panel { margin:24px 0 20px; }
+      .financial-ladder-panel { margin:18px 0 0; padding-top:10px; }
+      .financial-ladder-image { max-height:120px; }
       .map-scratchpad { margin:30px 0 20px; }
       .financial-ladder-heading { padding:14px; align-items:flex-start; flex-direction:column; gap:6px; }
     }
@@ -1480,15 +1486,16 @@
       <button class="log-day" id="logDay" type="button">Confirm &amp; Log Day →</button>
       <div class="log-status" id="logStatus" aria-live="polite"></div>
       <p class="board-foot">COMPLETIONS AND RATINGS SAVE BY DATE. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
+        <section class="financial-ladder-panel" aria-label="Winter financial freedom ladder">
+          <div class="financial-ladder-heading">
+            <strong>Financial Freedom Ladder</strong>
+            <span>Long-term progression / 01–08</span>
+          </div>
+          <img class="financial-ladder-image" src="./Winter%20Financial%20Freedom%20Ladder.png" alt="Winter Financial Freedom Ladder showing eight stages from a starter emergency fund to debt freedom" loading="lazy" />
+        </section>
         </section>
       </div>
-      <section class="financial-ladder-panel" aria-label="Winter financial freedom ladder">
-        <div class="financial-ladder-heading">
-          <strong>Financial Freedom Ladder</strong>
-          <span>Long-term progression / 01–08</span>
-        </div>
-        <img class="financial-ladder-image" src="./Winter%20Financial%20Freedom%20Ladder.png" alt="Winter Financial Freedom Ladder showing eight stages from a starter emergency fund to debt freedom" loading="lazy" />
-      </section>
+
     </section>
   </main>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
