@@ -1564,6 +1564,23 @@
       try { localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(taskData)); }
       catch (error) { console.warn("Could not save task data in this browser.", error); }
     }
+
+    // One-time coherence cleanup requested for the Winter Arc reset.
+    // Remove nutrition tracking for 2026-11-02 through 2026-11-08, and clear
+    // all prior workout completion records until training is intentionally restarted.
+    const COHERENCE_CLEANUP_KEY = "winterArcCoherenceCleanup20261114";
+    if (!localStorage.getItem(COHERENCE_CLEANUP_KEY)) {
+      for (const [date, record] of Object.entries(taskData)) {
+        if (!record || typeof record !== "object") continue;
+        if (date >= "2026-11-02" && date <= "2026-11-08") {
+          delete record.nutritionFollowed;
+        }
+        delete record.workoutDone;
+        delete record.workouts;
+      }
+      saveTaskData();
+      localStorage.setItem(COHERENCE_CLEANUP_KEY, "1");
+    }
     function recordFor(date) {
       if (!taskData[date]) taskData[date] = { completed: {}, investing: "", sideTasks: [] };
       if (!Array.isArray(taskData[date].sideTasks)) taskData[date].sideTasks = [];
