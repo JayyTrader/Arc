@@ -377,6 +377,14 @@
     .workout-schedule { display:grid; gap:9px; margin:13px 0 5px; }
     .workout-check-row { font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; }
     .workout-check-row input { accent-color:#8bd4ff; width:14px; height:14px; margin:0; }
+    .exercise-log { margin:10px 0 15px 22px; padding:10px 0 0; border-top:1px solid rgba(145,180,204,.1); }
+    .exercise-log-heading { display:grid; grid-template-columns:minmax(0,1fr) 74px 74px; gap:7px; margin-bottom:7px; color:#718da3; font:7px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .exercise-log-row { display:grid; grid-template-columns:minmax(0,1fr) 74px 74px; gap:7px; align-items:center; padding:5px 0; }
+    .exercise-log-name { color:#c5d6e4; font:9px "Space Grotesk",sans-serif; }
+    .exercise-log-row input { width:100%; min-width:0; padding:6px 5px; color:#e3f3ff; background:rgba(3,8,14,.6); border:1px solid rgba(145,180,204,.16); font:9px "IBM Plex Mono",monospace; }
+    .exercise-log-row input:focus { outline:none; border-color:rgba(130,205,255,.5); }
+    .exercise-log-status { margin:7px 0 0; color:#68859a; font:7px "IBM Plex Mono",monospace; letter-spacing:.08em; }
+    @media(max-width:420px) { .exercise-log { margin-left:8px; } .exercise-log-heading,.exercise-log-row { grid-template-columns:minmax(0,1fr) 62px 62px; gap:5px; } }
     .workout-history-title { margin:13px 0 7px; color:#83a3bd; font:9px "IBM Plex Mono",monospace; letter-spacing:.13em; }
     .workout-history { display:grid; gap:5px; margin-top:12px; color:#71869a; font:9px "IBM Plex Mono",monospace; }
     .board-wrap { width:100%; margin:0; padding:0 0 56px; }
@@ -2063,6 +2071,60 @@
           copy.textContent = slot.dayName.toUpperCase() + " · " + slot.date;
           label.append(check,copy);
           schedule.append(label);
+
+          const exerciseLog = document.createElement("div");
+          exerciseLog.className = "exercise-log";
+          const exerciseHeading = document.createElement("div");
+          exerciseHeading.className = "exercise-log-heading";
+          exerciseHeading.innerHTML = "<span>Exercise</span><span>Weight · lb</span><span>Time · min</span>";
+          exerciseLog.append(exerciseHeading);
+          const exerciseNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
+          const savedMetrics = (taskData[slot.date] && taskData[slot.date].exerciseMetrics) || {};
+          exerciseNames.forEach(exerciseName => {
+            const row = document.createElement("div");
+            row.className = "exercise-log-row";
+            const name = document.createElement("span");
+            name.className = "exercise-log-name";
+            name.textContent = exerciseName;
+            const weightInput = document.createElement("input");
+            weightInput.type = "number"; weightInput.min = "0"; weightInput.step = "0.5";
+            weightInput.inputMode = "decimal"; weightInput.placeholder = "—";
+            weightInput.setAttribute("aria-label", exerciseName + " weight in pounds");
+            const timeInput = document.createElement("input");
+            timeInput.type = "number"; timeInput.min = "0"; timeInput.step = "0.5";
+            timeInput.inputMode = "decimal"; timeInput.placeholder = "—";
+            timeInput.setAttribute("aria-label", exerciseName + " duration in minutes");
+            const metric = savedMetrics[exerciseName] || {};
+            weightInput.value = metric.weight ?? "";
+            timeInput.value = metric.time ?? "";
+            const saveMetric = () => {
+              const record = recordFor(slot.date);
+              if (!record.exerciseMetrics) record.exerciseMetrics = {};
+              const weight = weightInput.value.trim();
+              const time = timeInput.value.trim();
+              if (!weight && !time) {
+                delete record.exerciseMetrics[exerciseName];
+              } else {
+                record.exerciseMetrics[exerciseName] = {
+                  ...(weight ? {weight:Number(weight)} : {}),
+                  ...(time ? {time:Number(time)} : {})
+                };
+              }
+              saveTaskData();
+              status.textContent = "SAVED · " + slot.date;
+            };
+            const status = document.createElement("div");
+            status.className = "exercise-log-status";
+            weightInput.addEventListener("change",saveMetric);
+            timeInput.addEventListener("change",saveMetric);
+            row.append(name,weightInput,timeInput);
+            exerciseLog.append(row);
+          });
+          const status = document.createElement("div");
+          status.className = "exercise-log-status";
+          status.textContent = "WEIGHT AND DURATION SAVE AUTOMATICALLY";
+          exerciseLog.append(status);
+          schedule.append(exerciseLog);
         });
         const workoutHistory = document.createElement("div");
         workoutHistory.className = "workout-history";
