@@ -1333,15 +1333,14 @@
     .scratchpad-panel textarea { min-height: 104px; }
     .bottom-scratchpad { width:min(100%,1320px); margin:38px auto 30px; grid-column:1 / -1; justify-self:center; }
     .bottom-scratchpad .notes-wrap { padding:20px 22px 18px; }
-    .financial-ladder-panel {
-      width:100%; max-width:100%; margin:12px 0 0; padding:0 20px;
-      border:0; background:transparent; box-shadow:none; box-sizing:border-box;
-    }
-    .financial-ladder-image {
-      display:block; width:100%; max-width:100%; height:auto; max-height:none;
-      margin:0 auto; object-fit:contain; object-position:center top;
-      background:transparent; border:0; box-shadow:none;
-    }
+    .capital-terminal { margin-top:14px; border:1px solid rgba(145,180,204,.16); background:rgba(4,10,16,.58); }
+    .capital-terminal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; border-bottom:1px solid rgba(145,180,204,.13); }
+    .capital-terminal-label { color:#a9c4d8; font:600 10px "IBM Plex Mono",monospace; letter-spacing:.14em; }
+    .capital-terminal-state { color:#71899c; font:8px "IBM Plex Mono",monospace; letter-spacing:.1em; }
+    .capital-terminal .goal-card { padding:16px 18px; }
+    .capital-terminal .goal-card:last-child { border-bottom:0; }
+    .capital-terminal .milestone { font-size:10px; }
+    .capital-terminal .milestone input { accent-color:#8bd4ff; }
     .map-scratchpad { margin:42px 0 24px; border:0; border-top:1px solid rgba(150,183,207,.13); background:transparent; }
     .map-scratchpad .panel-header { padding:16px 0 10px; border:0; color:#a9c4d8; }
     .map-scratchpad .notes-wrap { padding:8px 0 0; }
@@ -1349,7 +1348,6 @@
     @media(max-width:600px) {
       .financial-ladder-panel { margin:18px 0 0; padding:0; }
       .financial-ladder-image { max-height:none; }
-      .command-grid > .financial-ladder-panel { grid-column:1; grid-row:auto; }
       .map-scratchpad { margin:30px 0 20px; }
       .financial-ladder-heading { padding:14px; align-items:flex-start; flex-direction:column; gap:6px; }
     }
@@ -1496,9 +1494,6 @@
       <div class="log-status" id="logStatus" aria-live="polite"></div>
       <p class="board-foot">COMPLETIONS AND RATINGS SAVE BY DATE. LOG DAY TO ARCHIVE THE DAILY RESULT AND ADVANCE TO THE NEXT DATE.</p>
 
-        </section>
-      <section class="financial-ladder-panel" aria-label="Winter financial freedom ladder">
-          <img class="financial-ladder-image" src="./winter-financial-ladder-transparent.png" alt="Winter Financial Freedom Ladder showing eight stages from a starter emergency fund to debt freedom" loading="lazy" />
         </section>
       </div>
 
@@ -2239,6 +2234,23 @@
         execution.append(grid);
         detail.append(execution);
       }
+      let goalContainer = detail;
+      if (activeSector === "financial") {
+        const terminal = document.createElement("section");
+        terminal.className = "capital-terminal";
+        const terminalHead = document.createElement("div");
+        terminalHead.className = "capital-terminal-head";
+        const terminalLabel = document.createElement("div");
+        terminalLabel.className = "capital-terminal-label";
+        terminalLabel.textContent = "CAPITAL ALLOCATION / PROGRESSION";
+        const terminalState = document.createElement("div");
+        terminalState.className = "capital-terminal-state";
+        terminalState.textContent = "FINANCIAL SYSTEM";
+        terminalHead.append(terminalLabel,terminalState);
+        terminal.append(terminalHead);
+        detail.append(terminal);
+        goalContainer = terminal;
+      }
       sector.goals.forEach(goal => {
         const card = document.createElement("article");
         card.className = "goal-card";
@@ -2271,7 +2283,7 @@
         meter.className = "goal-progress";
         meter.textContent = Math.round(goalProgress(goal)) + "% milestone completion";
         card.append(name,description,list,meter);
-        detail.append(card);
+        goalContainer.append(card);
       });
     }
     document.querySelectorAll(".branch-card").forEach(button => {
