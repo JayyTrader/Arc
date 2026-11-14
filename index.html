@@ -1916,6 +1916,7 @@
       fill.style.width = progress + "%";
       track.append(fill);
       detail.append(track);
+      let physicalMilestoneContainer = null;
       if (activeSector === "physical") {
         const execution = document.createElement("section");
         execution.className = "physical-execution";
@@ -2006,6 +2007,7 @@
           }
         }
         nutritionCard.append(nutritionTitle,fastingProtocol,nutritionChecks,adherenceValue,adherenceBar,adherenceCaption,nutritionHistory);
+        physicalMilestoneContainer = nutritionCard;
         const workoutCard = document.createElement("article");
         workoutCard.className = "physical-module";
         const workoutTitle = document.createElement("div");
@@ -2230,7 +2232,7 @@
         execution.append(grid);
         detail.append(execution);
       }
-      let goalContainer = detail;
+      let goalContainer = physicalMilestoneContainer || detail;
       if (activeSector === "financial") {
         const terminal = document.createElement("section");
         terminal.className = "capital-terminal";
