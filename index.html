@@ -1784,8 +1784,7 @@
         goals:[
           {id:"campus",title:"Become an Investing Master",description:"Progress through the Investing Campus curriculum and develop systems to an operational standard.",milestones:["Level 1 — SDCA (completed)","Level 1.5 — LTPI","Level 2 — MTPI","Level 3 — RSPS","Level 4 — Strategy Development","Level 5 — SOPS","Investing Autopsy Course"]}
           ,
-          {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan","Pay off the targeted debt"]},
-          {id:"freedom-ladder",title:"Financial Freedom Ladder",description:"Progress through the eight stages of capital allocation, asset building, and long-term financial independence.",milestones:["Step 1 — Build a $1,000 emergency fund","Step 2 — Direct 5% of income to the emergency fund and the remaining income to the debt snowball","Step 3 — Invest 10% of all income and direct the remaining capital to a 3–6 month emergency fund","Step 4 — Invest 20% of income and direct the remaining capital to the vehicle fund","Step 5 — Invest 20% of income and direct the remaining capital to home improvements","Step 6 — Sell the current house and purchase a new house","Step 7 — Pay off the mortgage while continuing to invest 20% of income","Step 8 — Become completely debt-free"]}
+          {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan"]}
         ]
       }
     };
@@ -1798,10 +1797,15 @@
           if (!saved.sectors[key]) saved.sectors[key] = structuredClone(defaultCampaign[key]);
         }
         saved.sectors.financial.goals = (saved.sectors.financial.goals || []).filter(goal => goal.id !== "macro");
-        // Add the original eight-stage financial freedom ladder without overwriting existing goal progress.
-        if (!saved.sectors.financial.goals.some(goal => goal.id === "freedom-ladder")) {
-          saved.sectors.financial.goals.push(structuredClone(defaultCampaign.financial.goals.find(goal => goal.id === "freedom-ladder")));
+        // Keep the Financial Freedom Ladder standalone and outside Winter Arc progression.
+        const oldLadder = saved.sectors.financial.goals.find(goal => goal.id === "freedom-ladder");
+        const ladderKey = "winterArcFinancialFreedomLadderV1";
+        if (oldLadder && oldLadder.completed) {
+          let standaloneProgress = {};
+          try { standaloneProgress = JSON.parse(localStorage.getItem(ladderKey) || "{}"); } catch {}
+          localStorage.setItem(ladderKey,JSON.stringify({...oldLadder.completed,...standaloneProgress}));
         }
+        saved.sectors.financial.goals = saved.sectors.financial.goals.filter(goal => goal.id !== "freedom-ladder");
         const oldPhysicalGoals = saved.sectors.physical.goals || [];
         const weightGoal = oldPhysicalGoals.find(goal => goal.id === "weight");
         saved.sectors.physical = {
@@ -1812,6 +1816,26 @@
         };
         return saved.sectors;
       } catch (error) { return structuredClone(defaultCampaign); }
+    }
+    const FINANCIAL_LADDER_KEY = "winterArcFinancialFreedomLadderV1";
+    const financialLadderSteps = [
+      "Step 1 — Build a $1,000 emergency fund",
+      "Step 2 — Direct 5% of income to the emergency fund and the remaining income to the debt snowball",
+      "Step 3 — Invest 10% of all income and direct the remaining capital to a 3–6 month emergency fund",
+      "Step 4 — Invest 20% of income and direct the remaining capital to the vehicle fund",
+      "Step 5 — Invest 20% of income and direct the remaining capital to home improvements",
+      "Step 6 — Sell the current house and purchase a new house",
+      "Step 7 — Continue investing 20% of income while paying off the mortgage",
+      "Step 8 — Become completely debt-free"
+    ];
+    function readFinancialLadder() {
+      try { return JSON.parse(localStorage.getItem(FINANCIAL_LADDER_KEY) || "{}"); }
+      catch { return {}; }
+    }
+    let financialLadderProgress = readFinancialLadder();
+    function saveFinancialLadder() {
+      try { localStorage.setItem(FINANCIAL_LADDER_KEY,JSON.stringify(financialLadderProgress)); }
+      catch (error) { console.warn("Could not save Financial Freedom Ladder progress.",error); }
     }
     let campaign = readCampaign();
     function saveCampaign() {
@@ -2288,6 +2312,46 @@
         card.append(name,description,list,meter);
         goalContainer.append(card);
       });
+      if (activeSector === "financial") {
+        const ladder = document.createElement("section");
+        ladder.className = "capital-terminal";
+        const ladderHead = document.createElement("div");
+        ladderHead.className = "capital-terminal-head";
+        const ladderTitle = document.createElement("div");
+        ladderTitle.className = "capital-terminal-label";
+        ladderTitle.textContent = "FINANCIAL FREEDOM LADDER";
+        const ladderState = document.createElement("div");
+        ladderState.className = "capital-terminal-state";
+        ladderState.textContent = "STANDALONE · LONG-TERM PLAN";
+        ladderHead.append(ladderTitle,ladderState);
+        ladder.append(ladderHead);
+        const ladderIntro = document.createElement("div");
+        ladderIntro.className = "goal-description";
+        ladderIntro.style.padding = "14px 18px 0";
+        ladderIntro.textContent = "An independent, multi-year financial roadmap. Progress here does not affect Winter Arc level or sector progression.";
+        ladder.append(ladderIntro);
+        const ladderList = document.createElement("div");
+        ladderList.className = "milestone-list";
+        ladderList.style.padding = "14px 18px 18px";
+        financialLadderSteps.forEach(step => {
+          const label = document.createElement("label");
+          label.className = "milestone" + (financialLadderProgress[step] ? " done" : "");
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = Boolean(financialLadderProgress[step]);
+          check.addEventListener("change",() => {
+            financialLadderProgress[step] = check.checked;
+            saveFinancialLadder();
+            renderCampaign();
+          });
+          const copy = document.createElement("span");
+          copy.textContent = step;
+          label.append(check,copy);
+          ladderList.append(label);
+        });
+        ladder.append(ladderList);
+        goalContainer.append(ladder);
+      }
     }
     document.querySelectorAll(".branch-card").forEach(button => {
       button.addEventListener("click",() => {
