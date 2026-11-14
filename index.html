@@ -1784,7 +1784,8 @@
         goals:[
           {id:"campus",title:"Become an Investing Master",description:"Progress through the Investing Campus curriculum and develop systems to an operational standard.",milestones:["Level 1 — SDCA (completed)","Level 1.5 — LTPI","Level 2 — MTPI","Level 3 — RSPS","Level 4 — Strategy Development","Level 5 — SOPS","Investing Autopsy Course"]}
           ,
-          {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan","Pay off the targeted debt"]}
+          {id:"debt",title:"Eliminate targeted debt",description:"Follow the debt payoff plan and eliminate the targeted high-interest debt.",milestones:["Verify the current target balance and payoff plan","Pay off the targeted debt"]},
+          {id:"freedom-ladder",title:"Financial Freedom Ladder",description:"Progress through the eight stages of capital allocation, asset building, and long-term financial independence.",milestones:["Step 1 — Build a $1,000 emergency fund","Step 2 — Direct 5% of income to the emergency fund and the remaining income to the debt snowball","Step 3 — Invest 10% of all income and direct the remaining capital to a 3–6 month emergency fund","Step 4 — Invest 20% of income and direct the remaining capital to the vehicle fund","Step 5 — Invest 20% of income and direct the remaining capital to home improvements","Step 6 — Sell the current house and purchase a new house","Step 7 — Pay off the mortgage while continuing to invest 20% of income","Step 8 — Become completely debt-free"]}
         ]
       }
     };
@@ -1797,6 +1798,10 @@
           if (!saved.sectors[key]) saved.sectors[key] = structuredClone(defaultCampaign[key]);
         }
         saved.sectors.financial.goals = (saved.sectors.financial.goals || []).filter(goal => goal.id !== "macro");
+        // Add the original eight-stage financial freedom ladder without overwriting existing goal progress.
+        if (!saved.sectors.financial.goals.some(goal => goal.id === "freedom-ladder")) {
+          saved.sectors.financial.goals.push(structuredClone(defaultCampaign.financial.goals.find(goal => goal.id === "freedom-ladder")));
+        }
         const oldPhysicalGoals = saved.sectors.physical.goals || [];
         const weightGoal = oldPhysicalGoals.find(goal => goal.id === "weight");
         saved.sectors.physical = {
