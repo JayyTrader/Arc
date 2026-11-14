@@ -1779,7 +1779,7 @@
       physical: {
         title:"PHYSICAL", description:"Reach 170 lbs while preserving muscle and building sustainable health habits.",
         goals:[
-          {id:"weight",title:"Reach 170 lbs",description:"Reach the target weight while preserving muscle, then establish a sustainable maintenance routine.",milestones:["Define and record a starting weight baseline","Reach 170 lbs","Establish a sustainable maintenance routine"]}
+          {id:"weight",title:"Reach 170 lbs",description:"Reach the target weight while preserving muscle, then establish a sustainable maintenance routine.",milestones:["Define and record a starting weight baseline","Reach 190 lbs","Reach 180 lbs","Reach 170 lbs","Establish a sustainable maintenance routine"]}
         ]
       },
       financial: {
@@ -1806,7 +1806,7 @@
           ...saved.sectors.physical,
           title:"PHYSICAL",
           description:"Reach 170 lbs while preserving muscle and building sustainable health habits.",
-          goals:[weightGoal ? {...weightGoal,title:"Reach 170 lbs",description:"Reach the target weight while preserving muscle, then establish a sustainable maintenance routine.",milestones:["Define and record a starting weight baseline","Reach 170 lbs","Establish a sustainable maintenance routine"]} : structuredClone(defaultCampaign.physical.goals[0])]
+          goals:[weightGoal ? {...weightGoal,title:"Reach 170 lbs",description:"Reach the target weight while preserving muscle, then establish a sustainable maintenance routine.",milestones:["Define and record a starting weight baseline","Reach 190 lbs","Reach 180 lbs","Reach 170 lbs","Establish a sustainable maintenance routine"]} : structuredClone(defaultCampaign.physical.goals[0])]
         };
         return saved.sectors;
       } catch (error) { return structuredClone(defaultCampaign); }
