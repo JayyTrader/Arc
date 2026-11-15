@@ -2209,13 +2209,13 @@
           for(let tick=0;tick<=4;tick++){
             const value=axisMax*tick/4, y=yAt(value);
             addSvg("line",{x1:left,y1:y,x2:right,y2:y,stroke:"rgba(150,183,207,.15)","stroke-width":1});
-            addSvg("text",{x:left-9,y:y+3,"text-anchor":"end",fill:"#71869a","font-size":10,"font-family":"IBM Plex Mono, monospace"},Math.round(value).toLocaleString());
+            addSvg("text",{x:left-9,y:y+3,"text-anchor":"end",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},Math.round(value).toLocaleString());
           }
           addSvg("line",{x1:left,y1:bottom,x2:right,y2:bottom,stroke:"rgba(150,183,207,.3)","stroke-width":1});
           workloadWeeks.forEach(([week],index)=>{
             if(workloadWeeks.length>8 && index%2!==0 && index!==workloadWeeks.length-1) return;
             const label=week.slice(5);
-            addSvg("text",{x:xAt(index),y:bottom+20,"text-anchor":"middle",fill:"#71869a","font-size":10,"font-family":"IBM Plex Mono, monospace"},label);
+            addSvg("text",{x:xAt(index),y:bottom+20,"text-anchor":"middle",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},label);
           });
           series.forEach(item=>{
             const points=item.values.map((value,index)=>xAt(index)+","+yAt(value)).join(" ");
