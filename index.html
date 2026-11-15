@@ -2041,8 +2041,8 @@
         workoutTitle.className = "physical-module-title";
         workoutTitle.textContent = "STRENGTH & CONDITIONING";
         const workoutDays = [
-          {dayName:"Tuesday",offset:1},
-          {dayName:"Friday",offset:4}
+          {dayName:"Sunday",offset:6},
+          {dayName:"Thursday",offset:3}
         ];
         const workoutSlots = workoutDays.map(slot => {
           const date = new Date(weekStart);
@@ -2239,7 +2239,7 @@
           endDate.setDate(endDate.getDate() + 6);
           const startString = dateKey(startDate);
           const endString = dateKey(endDate);
-          const done = [1,4].filter(offset => {
+          const done = [3,6].filter(offset => {
             const day = new Date(startDate);
             day.setDate(day.getDate() + offset);
             const dayRecord = taskData[dateKey(day)] || {};
