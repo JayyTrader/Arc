@@ -1886,7 +1886,7 @@
         let scheduled = 0;
         let completed = 0;
         for (let day = new Date(start); day <= end; day.setDate(day.getDate() + 1)) {
-          if (day.getDay() !== 2 && day.getDay() !== 5) continue;
+          if (day.getDay() !== 0 && day.getDay() !== 4) continue;
           scheduled++;
           const record = taskData[localDateString(day)] || {};
           if (record.workoutDone || (Array.isArray(record.workouts) && record.workouts.length > 0)) completed++;
