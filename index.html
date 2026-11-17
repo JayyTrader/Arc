@@ -345,6 +345,9 @@
     .micro-label { color:#83a3bd; font:9px "IBM Plex Mono",monospace; letter-spacing:.18em; text-transform:uppercase; }
     .mission-title { margin:9px 0 6px; color:#e5f3ff; font-size:clamp(25px,4vw,38px); letter-spacing:-.055em; }
     .mission-copy { margin:0 auto; max-width:520px; color:#91a5b8; font:11px/1.7 "IBM Plex Mono",monospace; }
+    .mantra-copy { max-width:900px; color:#dce8f4; font:14px/1.8 "Space Grotesk",sans-serif; letter-spacing:.005em; }
+    .mantra-copy p { margin:0 0 15px; }
+    .mantra-copy p:last-child { margin-bottom:0; }
     .mission-progress { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; color:#a8bed2; font:10px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
     .mission-progress strong { color:#8bd4ff; font-size:20px; letter-spacing:0; }
     .mission-track,.sector-track { height:5px; background:rgba(169,215,255,.12); overflow:hidden; margin-top:9px; }
@@ -542,12 +545,7 @@
         #09111a;
       text-align:left;
     }
-    .mission-card::after {
-      content:"01"; position:absolute; right:clamp(24px,5vw,72px); top:50%;
-      transform:translateY(-55%); color:rgba(176,216,249,.055);
-      font:600 clamp(110px,19vw,250px)/.8 "Space Grotesk",sans-serif;
-      letter-spacing:-.1em; pointer-events:none;
-    }
+    .mission-card::after { content:none; }
     .mission-card > * { position:relative; z-index:1; }
     .mission-title { font-size:clamp(34px,5vw,62px); margin:13px 0 10px; letter-spacing:-.07em; }
     .mission-copy { max-width:560px; font:15px/1.6 "Space Grotesk",sans-serif; color:#b1c1cf; }
@@ -1406,9 +1404,11 @@
       <div class="command-grid" id="overview">
         <section class="map-column" aria-label="Winter Arc mission map">
           <div class="mission-card">
-            <div class="micro-label">Primary objective / Permanent mission</div>
-            <h2 class="mission-title">THE MAIN IDEA</h2>
-            <p class="mission-copy">Build a stronger, healthier, wealthier life.</p>
+            <div class="mantra-copy">
+              <p>I am a millionaire who is at 10% body fat and I am better than everyone around me, I will be successful without question. If I work everyday towards my goals, I will make it. There is no doubt or enemy in the universe that can stop me from achieving my dreams. Fucking no body can stand in my way.</p>
+              <p>Fuck the haters, friends, family, whoever the fuck else who stands in my way. Show them you are on top of the world. Have them wish they were you. He's always watching you, your every move, even in silence, alone, he's there, waiting until you make a mistake. Grab the fucking demon by the neck and recruit him to your fucking legion. The demon works for you now.</p>
+              <p>Never quit, always push forward. Fuck feelings. You must prove everybody wrong. Fucking everybody doubts you. They might say they don't, but they do deep down. They are apart of the normal 90% of people hoping you fall back into the sheep mentality. Do not let them drag you down. Rise above the fucking losers. You are not them! Be better! Make them feel uncomfortable around you because you work so hard. Take their fucking souls. Change your bloodline G. Fucking WIN!</p>
+            </div>
             <div class="mission-progress"><span>Overall progression</span><strong id="mainProgressValue">0%</strong></div>
             <div class="mission-track"><div class="mission-fill" id="mainProgressFill"></div></div>
           </div>
