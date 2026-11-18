@@ -354,6 +354,11 @@
     .mission-title { margin:9px 0 6px; color:#e5f3ff; font-size:clamp(25px,4vw,38px); letter-spacing:-.055em; }
     .mission-copy { margin:0 auto; max-width:520px; color:#91a5b8; font:11px/1.7 "IBM Plex Mono",monospace; }
     .mantra-copy { max-width:900px; color:#dce8f4; font:14px/1.8 "Space Grotesk",sans-serif; letter-spacing:.005em; border:1px solid rgba(169,215,255,.18); padding:clamp(16px,2.2vw,26px); background:rgba(5,11,17,.22); }
+    .mantra-toggle { display:inline-flex; align-items:center; justify-content:center; gap:10px; margin:0 auto 0; padding:11px 16px; border:1px solid rgba(169,215,255,.28); background:rgba(5,11,17,.35); color:#b9d8ef; font:9px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; cursor:pointer; transition:border-color .2s ease,background .2s ease,color .2s ease; }
+    .mantra-toggle:hover,.mantra-toggle:focus-visible { outline:none; border-color:rgba(130,205,255,.7); background:rgba(17,32,45,.7); color:#e3f4ff; }
+    .mantra-toggle .toggle-mark { color:#8bd4ff; font-size:13px; line-height:1; }
+    .mantra-copy[hidden] { display:none !important; }
+    .mantra-copy:not([hidden]) { margin:16px auto 0; }
     .mantra-copy p { margin:0 0 15px; }
     .mantra-copy p:last-child { margin-bottom:0; }
     .mission-progress { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; color:#a8bed2; font:10px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
@@ -1412,7 +1417,8 @@
       <div class="command-grid" id="overview">
         <section class="map-column" aria-label="Winter Arc mission map">
           <div class="mission-card">
-            <div class="mantra-copy">
+            <button class="mantra-toggle" id="mantraToggle" type="button" aria-expanded="false" aria-controls="mantraCopy"><span class="toggle-mark" aria-hidden="true">+</span><span class="toggle-label">READ DAILY MOTTO</span></button>
+            <div class="mantra-copy" id="mantraCopy" hidden>
               <p>I am a millionaire who is at 10% body fat and I am better than everyone around me, I will be successful without question. If I work everyday towards my goals, I will make it. There is no doubt or enemy in the universe that can stop me from achieving my dreams. Fucking no body can stand in my way.</p>
               <p>Fuck the haters, friends, family, whoever the fuck else who stands in my way. Show them you are on top of the world. Have them wish they were you. He's always watching you, your every move, even in silence, alone, he's there, waiting until you make a mistake. Grab the fucking demon by the neck and recruit him to your fucking legion. The demon works for you now.</p>
               <p>Never quit, always push forward. Fuck feelings. You must prove everybody wrong. Fucking everybody doubts you. They might say they don't, but they do deep down. They are apart of the normal 90% of people hoping you fall back into the sheep mentality. Do not let them drag you down. Rise above the fucking losers. You are not them! Be better! Make them feel uncomfortable around you because you work so hard. Take their fucking souls. Change your bloodline G. Fucking WIN!</p>
@@ -1920,7 +1926,16 @@
         document.getElementById(key+"CardValue").textContent = Math.round(value) + "%";
         document.getElementById(key+"CardFill").style.width = value + "%";
       }
-      document.querySelectorAll(".branch-card").forEach(button => {
+      const mantraToggle = document.getElementById("mantraToggle");
+    const mantraCopy = document.getElementById("mantraCopy");
+    mantraToggle.addEventListener("click", () => {
+      const expanded = mantraToggle.getAttribute("aria-expanded") === "true";
+      mantraToggle.setAttribute("aria-expanded",String(!expanded));
+      mantraCopy.hidden = expanded;
+      mantraToggle.querySelector(".toggle-label").textContent = expanded ? "READ DAILY MOTTO" : "MINIMIZE MOTTO";
+      mantraToggle.querySelector(".toggle-mark").textContent = expanded ? "+" : "−";
+    });
+        document.querySelectorAll(".branch-card").forEach(button => {
         const selected = button.dataset.sector === activeSector;
         button.classList.toggle("active",selected);
         button.setAttribute("aria-expanded",String(selected));
