@@ -305,8 +305,14 @@
         linear-gradient(180deg,rgba(2,5,9,.76) 0%,rgba(2,5,9,.84) 55%,rgba(2,5,9,.92) 100%),
         url("Gritty%20Focus%20in%20the%20Power%20Rack.png") center center / cover fixed no-repeat;
     }
+    .dashboard.financial-background {
+      background:
+        linear-gradient(180deg,rgba(2,5,9,.76) 0%,rgba(2,5,9,.84) 55%,rgba(2,5,9,.92) 100%),
+        url("Monolithic%20Data%20Fortress%20in%20the%20Void.png") center center / cover fixed no-repeat;
+    }
     @media(max-width:900px) {
-      .dashboard.physical-background { background-attachment:scroll; }
+      .dashboard.physical-background,
+      .dashboard.financial-background { background-attachment:scroll; }
     }
     .board-topline { display:flex; justify-content:space-between; gap:16px; color:#64788c; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
     .board-heading { margin:44px 0 8px; font-size:clamp(2rem,5vw,3.4rem); letter-spacing:-.06em; font-weight:600; color:#e8f3ff; }
@@ -1885,7 +1891,9 @@
       return goals.length ? goals.reduce((sum,goal) => sum + goalProgress(goal),0) / goals.length : 0;
     }
     function renderCampaign() {
-      document.querySelector(".dashboard").classList.toggle("physical-background", activeSector === "physical");
+      const dashboard = document.querySelector(".dashboard");
+      dashboard.classList.toggle("physical-background", activeSector === "physical");
+      dashboard.classList.toggle("financial-background", activeSector === "financial");
       // Moving ticker shows cumulative adherence from the first recorded entry through today.
       const todayKey = localDateString();
       const datedRecords = Object.keys(taskData)
