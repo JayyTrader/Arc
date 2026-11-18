@@ -1926,15 +1926,6 @@
         document.getElementById(key+"CardValue").textContent = Math.round(value) + "%";
         document.getElementById(key+"CardFill").style.width = value + "%";
       }
-      const mantraToggle = document.getElementById("mantraToggle");
-    const mantraCopy = document.getElementById("mantraCopy");
-    mantraToggle.addEventListener("click", () => {
-      const expanded = mantraToggle.getAttribute("aria-expanded") === "true";
-      mantraToggle.setAttribute("aria-expanded",String(!expanded));
-      mantraCopy.hidden = expanded;
-      mantraToggle.querySelector(".toggle-label").textContent = expanded ? "READ DAILY MOTTO" : "MINIMIZE MOTTO";
-      mantraToggle.querySelector(".toggle-mark").textContent = expanded ? "+" : "−";
-    });
         document.querySelectorAll(".branch-card").forEach(button => {
         const selected = button.dataset.sector === activeSector;
         button.classList.toggle("active",selected);
@@ -2388,6 +2379,18 @@
         goalContainer.append(ladder);
       }
     }
+    // Delegate the motto control once so it remains interactive across sector changes.
+    document.addEventListener("click", event => {
+      const mantraToggle = event.target.closest("#mantraToggle");
+      if (!mantraToggle) return;
+      const mantraCopy = document.getElementById("mantraCopy");
+      if (!mantraCopy) return;
+      const expanded = mantraToggle.getAttribute("aria-expanded") === "true";
+      mantraToggle.setAttribute("aria-expanded",String(!expanded));
+      mantraCopy.hidden = expanded;
+      mantraToggle.querySelector(".toggle-label").textContent = expanded ? "READ DAILY MOTTO" : "MINIMIZE MOTTO";
+      mantraToggle.querySelector(".toggle-mark").textContent = expanded ? "+" : "−";
+    });
     document.querySelectorAll(".branch-card").forEach(button => {
       button.addEventListener("click",() => {
         activeSector = button.dataset.sector;
