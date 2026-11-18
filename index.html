@@ -1890,14 +1890,13 @@
         ).length;
         lifetimeNutrition = Math.round(followedDays / totalDays * 100) + "%";
       }
-      const trainingDates = datedRecords.filter(key => {
-        const record = taskData[key] || {};
-        return Object.prototype.hasOwnProperty.call(record, "workoutDone") ||
-          (Array.isArray(record.workouts) && record.workouts.length > 0);
-      });
+      // Training adherence begins with the first training week: Thursday, Nov 12, 2026.
+      // Count only scheduled Sunday/Thursday sessions that have occurred; future sessions
+      // do not enter the denominator until their scheduled date arrives.
+      const trainingStart = "2026-11-12";
       let lifetimeTraining = "—";
-      if (trainingDates.length) {
-        const start = dateFromKey(trainingDates[0]);
+      if (todayKey >= trainingStart) {
+        const start = dateFromKey(trainingStart);
         const end = dateFromKey(todayKey);
         let scheduled = 0;
         let completed = 0;
