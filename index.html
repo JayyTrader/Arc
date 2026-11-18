@@ -1721,7 +1721,6 @@
       dailyRating.value = Number.isInteger(Number(record.rating)) && Number(record.rating) >= 1 && Number(record.rating) <= 10 ? String(record.rating) : "";
       investingCheck.checked = Boolean(record.completed.investing);
       investingRow.classList.toggle("done", investingCheck.checked);
-      const activeTasks = tasksForDate(date);
       const total = activeTasks.length + 1 + record.sideTasks.length;
       const complete = activeTasks.filter(task => record.completed[task.id]).length + (record.completed.investing ? 1 : 0) + record.sideTasks.filter(task => task.completed).length;
       progressLabel.textContent = complete + " / " + total + " COMPLETE";
