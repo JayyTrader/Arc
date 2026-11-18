@@ -300,6 +300,14 @@
         #030405;
     }
     .board-wrap { width: min(100%, 860px); margin: 0 auto; padding: 10px 0 56px; }
+    .dashboard.physical-background {
+      background:
+        linear-gradient(180deg,rgba(2,5,9,.76) 0%,rgba(2,5,9,.84) 55%,rgba(2,5,9,.92) 100%),
+        url("Gritty%20Focus%20in%20the%20Power%20Rack.png") center center / cover fixed no-repeat;
+    }
+    @media(max-width:900px) {
+      .dashboard.physical-background { background-attachment:scroll; }
+    }
     .board-topline { display:flex; justify-content:space-between; gap:16px; color:#64788c; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
     .board-heading { margin:44px 0 8px; font-size:clamp(2rem,5vw,3.4rem); letter-spacing:-.06em; font-weight:600; color:#e8f3ff; }
     .board-subtitle { margin:0; color:#8192a3; font:11px "IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
@@ -1856,6 +1864,7 @@
       return goals.length ? goals.reduce((sum,goal) => sum + goalProgress(goal),0) / goals.length : 0;
     }
     function renderCampaign() {
+      document.querySelector(".dashboard").classList.toggle("physical-background", activeSector === "physical");
       // Moving ticker shows cumulative adherence from the first recorded entry through today.
       const todayKey = localDateString();
       const datedRecords = Object.keys(taskData)
