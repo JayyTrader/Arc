@@ -400,13 +400,13 @@
     .workout-check-row { font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; }
     .workout-check-row input { accent-color:#8bd4ff; width:14px; height:14px; margin:0; }
     .exercise-log { margin:10px 0 15px 22px; padding:10px 0 0; border-top:1px solid rgba(145,180,204,.1); }
-    .exercise-log-heading { display:grid; grid-template-columns:minmax(0,1fr) 68px 48px 48px; gap:6px; margin-bottom:7px; color:#718da3; font:7px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
-    .exercise-log-row { display:grid; grid-template-columns:minmax(0,1fr) 68px 48px 48px; gap:6px; align-items:center; padding:5px 0; }
+    .exercise-log-heading { display:grid; grid-template-columns:minmax(0,1fr) 68px; gap:6px; margin-bottom:7px; color:#718da3; font:7px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .exercise-log-row { display:grid; grid-template-columns:minmax(0,1fr) 68px; gap:6px; align-items:center; padding:5px 0; }
     .exercise-log-name { color:#c5d6e4; font:9px "Space Grotesk",sans-serif; }
     .exercise-log-row input { width:100%; min-width:0; padding:6px 5px; color:#e3f3ff; background:rgba(3,8,14,.6); border:1px solid rgba(145,180,204,.16); font:9px "IBM Plex Mono",monospace; }
     .exercise-log-row input:focus { outline:none; border-color:rgba(130,205,255,.5); }
     .exercise-log-status { margin:7px 0 0; color:#68859a; font:7px "IBM Plex Mono",monospace; letter-spacing:.08em; }
-    @media(max-width:420px) { .exercise-log { margin-left:8px; } .exercise-log-heading,.exercise-log-row { grid-template-columns:minmax(0,1fr) 54px 42px 42px; gap:4px; } }
+    @media(max-width:420px) { .exercise-log { margin-left:8px; } .exercise-log-heading,.exercise-log-row { grid-template-columns:minmax(0,1fr) 54px; gap:4px; } }
     .workout-history-title { margin:13px 0 7px; color:#83a3bd; font:9px "IBM Plex Mono",monospace; letter-spacing:.13em; }
     .workout-history { display:grid; gap:5px; margin-top:12px; color:#71869a; font:9px "IBM Plex Mono",monospace; }
     .workload-panel { margin:18px 0 12px; padding:14px 12px 12px; border:1px solid rgba(145,180,204,.14); background:rgba(4,10,16,.42); }
@@ -2125,13 +2125,13 @@
           exerciseLog.className = "exercise-log";
           const exerciseHeading = document.createElement("div");
           exerciseHeading.className = "exercise-log-heading";
-          exerciseHeading.innerHTML = "<span>Exercise</span><span>Weight · lb</span><span>Min</span><span>Sec</span>";
+          exerciseHeading.innerHTML = "<span>Exercise</span><span>Weight · lb</span>";
           exerciseLog.append(exerciseHeading);
           const exerciseNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
           const savedMetrics = (taskData[slot.date] && taskData[slot.date].exerciseMetrics) || {};
           const status = document.createElement("div");
           status.className = "exercise-log-status";
-          status.textContent = "WEIGHT AND DURATION SAVE AUTOMATICALLY";
+          status.textContent = "WORKING WEIGHT SAVES AUTOMATICALLY";
           exerciseLog.append(status);
           exerciseNames.forEach(exerciseName => {
             const row = document.createElement("div");
@@ -2142,99 +2142,83 @@
             const weightInput = document.createElement("input");
             weightInput.type = "number"; weightInput.min = "0"; weightInput.step = "0.5";
             weightInput.inputMode = "decimal"; weightInput.placeholder = "—";
-            weightInput.setAttribute("aria-label", exerciseName + " weight in pounds");
-            const minutesInput = document.createElement("input");
-            minutesInput.type = "number"; minutesInput.min = "0"; minutesInput.step = "1";
-            minutesInput.inputMode = "numeric"; minutesInput.placeholder = "—";
-            minutesInput.setAttribute("aria-label", exerciseName + " duration in minutes");
-            const secondsInput = document.createElement("input");
-            secondsInput.type = "number"; secondsInput.min = "0"; secondsInput.max = "59"; secondsInput.step = "1";
-            secondsInput.inputMode = "numeric"; secondsInput.placeholder = "—";
-            secondsInput.setAttribute("aria-label", exerciseName + " duration in seconds");
+            weightInput.setAttribute("aria-label", exerciseName + " working weight in pounds");
             const metric = savedMetrics[exerciseName] || {};
             weightInput.value = metric.weight ?? "";
-            const savedSeconds = Math.max(0,Math.round(Number(metric.time || 0) * 60));
-            minutesInput.value = metric.time !== undefined ? Math.floor(savedSeconds / 60) : "";
-            secondsInput.value = metric.time !== undefined ? savedSeconds % 60 : "";
             const saveMetric = () => {
               const record = recordFor(slot.date);
               if (!record.exerciseMetrics) record.exerciseMetrics = {};
               const weight = weightInput.value.trim();
-              const minutes = minutesInput.value.trim();
-              const seconds = secondsInput.value.trim();
-              const totalSeconds = (minutes ? Number(minutes) * 60 : 0) + (seconds ? Number(seconds) : 0);
-              if (Number(seconds) > 59) {
-                secondsInput.setCustomValidity("Enter seconds from 0 to 59.");
-                secondsInput.reportValidity();
-                return;
-              }
-              secondsInput.setCustomValidity("");
-              if (!weight && !minutes && !seconds) {
+              if (!weight) {
                 delete record.exerciseMetrics[exerciseName];
+                if (!Object.keys(record.exerciseMetrics).length) delete record.exerciseMetrics;
               } else {
-                record.exerciseMetrics[exerciseName] = {
-                  ...(weight ? {weight:Number(weight)} : {}),
-                  ...((minutes || seconds) ? {time:totalSeconds / 60} : {})
-                };
+                record.exerciseMetrics[exerciseName] = {weight:Number(weight)};
               }
               saveTaskData();
               status.textContent = "SAVED · " + slot.date;
             };
-            [weightInput,minutesInput,secondsInput].forEach(input => input.addEventListener("change",saveMetric));
-            row.append(name,weightInput,minutesInput,secondsInput);
+            weightInput.addEventListener("change",saveMetric);
+            row.append(name,weightInput);
             exerciseLog.append(row);
           });
           schedule.append(exerciseLog);
         });
-        // Weekly exercise workload chart: weight × duration, summed by exercise and week.
+        // Weekly working-weight chart: average logged weight only; time is not part of the calculation.
         const workloadPanel = document.createElement("section");
         workloadPanel.className = "workload-panel";
         const workloadTitle = document.createElement("div");
         workloadTitle.className = "workload-title";
-        workloadTitle.textContent = "WEEKLY TRAINING WORKLOAD";
+        workloadTitle.textContent = "WEEKLY TRAINING WORKING WEIGHT";
         const workloadSubtitle = document.createElement("div");
         workloadSubtitle.className = "workload-subtitle";
-        workloadSubtitle.textContent = "AGGREGATE LOAD + INDIVIDUAL EXERCISE TRENDS · LB-MIN";
+        workloadSubtitle.textContent = "TOTAL WORKING WEIGHT + INDIVIDUAL EXERCISE TRENDS · LB";
         workloadPanel.append(workloadTitle,workloadSubtitle);
         const workloadNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
         const workloadColors = ["#83d7ff","#f2b766","#a9a0ff","#75d6b1","#ff8f9b","#dceeff"];
-        const weeklyLoads = new Map();
+        const weeklyWeights = new Map();
         Object.entries(taskData).forEach(([date,record]) => {
           if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !record || !record.exerciseMetrics) return;
           const metrics = record.exerciseMetrics;
           const values = workloadNames.map(name => {
-            const metric = metrics[name] || {};
-            const weight = Number(metric.weight);
-            const time = Number(metric.time);
-            return Number.isFinite(weight) && weight > 0 && Number.isFinite(time) && time > 0 ? weight * time : 0;
+            const weight = Number((metrics[name] || {}).weight);
+            return Number.isFinite(weight) && weight > 0 ? weight : 0;
           });
           if (!values.some(value => value > 0)) return;
           const day = dateFromKey(date);
           const monday = new Date(day);
           monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
           const weekKey = dateKey(monday);
-          if (!weeklyLoads.has(weekKey)) weeklyLoads.set(weekKey,[0,0,0,0,0]);
-          const totals = weeklyLoads.get(weekKey);
-          values.forEach((value,index) => totals[index] += value);
+          if (!weeklyWeights.has(weekKey)) weeklyWeights.set(weekKey,workloadNames.map(() => ({sum:0,count:0})));
+          const totals = weeklyWeights.get(weekKey);
+          values.forEach((value,index) => {
+            if (value > 0) {
+              totals[index].sum += value;
+              totals[index].count++;
+            }
+          });
         });
-        const workloadWeeks = [...weeklyLoads.entries()].sort((a,b) => a[0].localeCompare(b[0])).slice(-12);
+        const workloadWeeks = [...weeklyWeights.entries()]
+          .sort((a,b) => a[0].localeCompare(b[0]))
+          .slice(-12)
+          .map(([week,entries]) => [week,entries.map(entry => entry.count ? entry.sum / entry.count : 0)]);
         if (!workloadWeeks.length) {
           const empty = document.createElement("div");
           empty.className = "workload-empty";
-          empty.textContent = "NO EXERCISE METRICS LOGGED YET. ENTER WEIGHT AND TIME TO START BUILDING YOUR WEEKLY TREND.";
+          empty.textContent = "NO WORKING WEIGHTS LOGGED YET. ENTER WEIGHT FOR EACH EXERCISE TO BUILD YOUR WEEKLY TREND.";
           workloadPanel.append(empty);
         } else {
           const aggregate = workloadWeeks.map(([,values]) => values.reduce((sum,value) => sum + value,0));
-          const series = [{name:"TOTAL WORKLOAD",values:aggregate,color:workloadColors[5],width:3.5},...workloadNames.map((name,index)=>({name,values:workloadWeeks.map(([,values])=>values[index]),color:workloadColors[index],width:1.8}))];
+          const series = [{name:"TOTAL WORKING WEIGHT",values:aggregate,color:workloadColors[5],width:3.5},...workloadNames.map((name,index)=>({name,values:workloadWeeks.map(([,values])=>values[index]),color:workloadColors[index],width:1.8}))];
           const svgNS = "http://www.w3.org/2000/svg";
           const svg = document.createElementNS(svgNS,"svg");
           svg.setAttribute("class","workload-chart");
           svg.setAttribute("viewBox","0 0 760 300");
           svg.setAttribute("role","img");
-          svg.setAttribute("aria-label","Weekly workload line chart showing total workload and each exercise in pound-minutes");
+          svg.setAttribute("aria-label","Weekly average working-weight line chart showing total working weight and each exercise in pounds");
           const left=58,right=738,top=18,bottom=238;
           const maxValue=Math.max(1,...aggregate);
-          const axisMax=Math.ceil(maxValue/500)*500 || 500;
+          const axisMax=Math.ceil(maxValue/250)*250 || 250;
           const xAt=index => workloadWeeks.length===1 ? (left+right)/2 : left+index*(right-left)/(workloadWeeks.length-1);
           const yAt=value => bottom-(value/axisMax)*(bottom-top);
           const addSvg=(tag,attrs,textValue) => {
@@ -2256,8 +2240,8 @@
           });
           series.forEach(item=>{
             const points=item.values.map((value,index)=>xAt(index)+","+yAt(value)).join(" ");
-            addSvg("polyline",{points,fill:"none",stroke:item.color,"stroke-width":item.width,"stroke-linecap":"round","stroke-linejoin":"round",opacity:item.name==="TOTAL WORKLOAD"?1:.88});
-            item.values.forEach((value,index)=>addSvg("circle",{cx:xAt(index),cy:yAt(value),r:item.name==="TOTAL WORKLOAD"?4:2.8,fill:item.color,stroke:"#071019","stroke-width":1}));
+            addSvg("polyline",{points,fill:"none",stroke:item.color,"stroke-width":item.width,"stroke-linecap":"round","stroke-linejoin":"round",opacity:item.name==="TOTAL WORKING WEIGHT"?1:.88});
+            item.values.forEach((value,index)=>addSvg("circle",{cx:xAt(index),cy:yAt(value),r:item.name==="TOTAL WORKING WEIGHT"?4:2.8,fill:item.color,stroke:"#071019","stroke-width":1}));
           });
           workloadPanel.append(svg);
           const legend=document.createElement("div");
@@ -2271,7 +2255,7 @@
           workloadPanel.append(legend);
           const note=document.createElement("div");
           note.className="workload-note";
-          note.textContent="WEEKLY VALUES SUM WEIGHT × MINUTES FOR LOGGED EXERCISES. MISSING ENTRIES COUNT AS ZERO; TOTAL IS THE SUM OF THE FIVE EXERCISES.";
+          note.textContent="EACH EXERCISE LINE IS ITS WEEKLY AVERAGE LOGGED WORKING WEIGHT. TOTAL IS THE SUM OF THE FIVE EXERCISE AVERAGES. TIME IS NOT USED.";
           workloadPanel.append(note);
         }
         const workoutHistory = document.createElement("div");
