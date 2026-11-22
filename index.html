@@ -2176,9 +2176,9 @@
         workloadPanel.append(workloadTitle,workloadSubtitle);
         const workloadNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
         const workloadColors = ["#83d7ff","#f2b766","#a9a0ff","#75d6b1","#ff8f9b","#dceeff"];
-        // Per-workout chart: each date with recorded exercise weights contributes one point.
+        // Per-workout records: total workload and exercise weights are charted separately.
         const workoutPoints = Object.entries(taskData)
-          .filter(([date,record]) => /^\d{4}-\d{2}-\d{2}$/.test(date) && record && record.exerciseMetrics)
+          .filter(([date,record]) => /^\\d{4}-\\d{2}-\\d{2}$/.test(date) && record && record.exerciseMetrics)
           .map(([date,record]) => [date,workloadNames.map(name => {
             const weight = Number((record.exerciseMetrics[name] || {}).weight);
             return Number.isFinite(weight) && weight > 0 ? weight : 0;
@@ -2193,53 +2193,76 @@
           workloadPanel.append(empty);
         } else {
           const aggregate = workoutPoints.map(([,values]) => values.reduce((sum,value) => sum + value,0));
-          const series = [{name:"TOTAL WORKING WEIGHT",values:aggregate,color:workloadColors[5],width:3.5},...workloadNames.map((name,index)=>({name,values:workoutPoints.map(([,values])=>values[index]),color:workloadColors[index],width:1.8}))];
           const svgNS = "http://www.w3.org/2000/svg";
-          const svg = document.createElementNS(svgNS,"svg");
-          svg.setAttribute("class","workload-chart");
-          svg.setAttribute("viewBox","0 0 760 300");
-          svg.setAttribute("role","img");
-          svg.setAttribute("aria-label","Per-workout working-weight line chart showing total working weight and each exercise in pounds");
-          const left=58,right=738,top=18,bottom=238;
-          const maxValue=Math.max(1,...aggregate);
-          const axisMax=Math.ceil(maxValue/250)*250 || 250;
-          const xAt=index => workoutPoints.length===1 ? (left+right)/2 : left+index*(right-left)/(workoutPoints.length-1);
-          const yAt=value => bottom-(value/axisMax)*(bottom-top);
-          const addSvg=(tag,attrs,textValue) => {
-            const node=document.createElementNS(svgNS,tag);
-            Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));
-            if (textValue!==undefined) node.textContent=textValue;
-            svg.append(node); return node;
+          const xAt=index => workoutPoints.length===1 ? 398 : 58+index*680/(workoutPoints.length-1);
+          const addChart=(title,subtitle,series,axisStep,axisLabelStep,axisMaxValue,ariaLabel)=>{
+            const heading=document.createElement("div");
+            heading.className="workload-title";
+            heading.style.marginTop=title==="TOTAL WORKLOAD"? "18px":"28px";
+            heading.textContent=title;
+            const sub=document.createElement("div");
+            sub.className="workload-subtitle";
+            sub.textContent=subtitle;
+            workloadPanel.append(heading,sub);
+            const svg=document.createElementNS(svgNS,"svg");
+            svg.setAttribute("class","workload-chart");
+            svg.setAttribute("viewBox","0 0 760 300");
+            svg.setAttribute("role","img");
+            svg.setAttribute("aria-label",ariaLabel);
+            const left=58,right=738,top=18,bottom=238;
+            const axisMax=Math.max(axisStep,Math.ceil(axisMaxValue/axisStep)*axisStep);
+            const yAt=value=>bottom-(value/axisMax)*(bottom-top);
+            const addSvg=(tag,attrs,textValue)=>{
+              const node=document.createElementNS(svgNS,tag);
+              Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));
+              if(textValue!==undefined) node.textContent=textValue;
+              svg.append(node); return node;
+            };
+            for(let value=0;value<=axisMax;value+=axisStep){
+              const y=yAt(value);
+              addSvg("line",{x1:left,y1:y,x2:right,y2:y,stroke:"rgba(150,183,207,.15)","stroke-width":1});
+              if(value%axisLabelStep===0 || value===axisMax){
+                addSvg("text",{x:left-9,y:y+3,"text-anchor":"end",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},value.toLocaleString());
+              }
+            }
+            addSvg("line",{x1:left,y1:bottom,x2:right,y2:bottom,stroke:"rgba(150,183,207,.3)","stroke-width":1});
+            workoutPoints.forEach(([date],index)=>{
+              if(workoutPoints.length>8 && index%2!==0 && index!==workoutPoints.length-1) return;
+              addSvg("text",{x:xAt(index),y:bottom+20,"text-anchor":"middle",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},date.slice(5));
+            });
+            series.forEach(item=>{
+              const points=item.values.map((value,index)=>xAt(index)+","+yAt(value)).join(" ");
+              addSvg("polyline",{points,fill:"none",stroke:item.color,"stroke-width":item.width,"stroke-linecap":"round","stroke-linejoin":"round"});
+              item.values.forEach((value,index)=>addSvg("circle",{cx:xAt(index),cy:yAt(value),r:3,fill:item.color,stroke:"#071019","stroke-width":1}));
+            });
+            workloadPanel.append(svg);
+            const legend=document.createElement("div");
+            legend.className="workload-legend";
+            series.forEach(item=>{
+              const entry=document.createElement("div"); entry.className="workload-legend-item";
+              const swatch=document.createElement("span"); swatch.className="workload-legend-swatch"; swatch.style.background=item.color;
+              const label=document.createElement("span"); label.textContent=item.name;
+              entry.append(swatch,label); legend.append(entry);
+            });
+            workloadPanel.append(legend);
           };
-          for(let tick=0;tick<=4;tick++){
-            const value=axisMax*tick/4, y=yAt(value);
-            addSvg("line",{x1:left,y1:y,x2:right,y2:y,stroke:"rgba(150,183,207,.15)","stroke-width":1});
-            addSvg("text",{x:left-9,y:y+3,"text-anchor":"end",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},Math.round(value).toLocaleString());
-          }
-          addSvg("line",{x1:left,y1:bottom,x2:right,y2:bottom,stroke:"rgba(150,183,207,.3)","stroke-width":1});
-          workoutPoints.forEach(([date],index)=>{
-            if(workoutPoints.length>8 && index%2!==0 && index!==workoutPoints.length-1) return;
-            const label=date.slice(5);
-            addSvg("text",{x:xAt(index),y:bottom+20,"text-anchor":"middle",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},label);
-          });
-          series.forEach(item=>{
-            const points=item.values.map((value,index)=>xAt(index)+","+yAt(value)).join(" ");
-            addSvg("polyline",{points,fill:"none",stroke:item.color,"stroke-width":item.width,"stroke-linecap":"round","stroke-linejoin":"round",opacity:item.name==="TOTAL WORKING WEIGHT"?1:.88});
-            item.values.forEach((value,index)=>addSvg("circle",{cx:xAt(index),cy:yAt(value),r:item.name==="TOTAL WORKING WEIGHT"?4:2.8,fill:item.color,stroke:"#071019","stroke-width":1}));
-          });
-          workloadPanel.append(svg);
-          const legend=document.createElement("div");
-          legend.className="workload-legend";
-          series.forEach(item=>{
-            const entry=document.createElement("div"); entry.className="workload-legend-item";
-            const swatch=document.createElement("span"); swatch.className="workload-legend-swatch"; swatch.style.background=item.color;
-            const label=document.createElement("span"); label.textContent=item.name;
-            entry.append(swatch,label); legend.append(entry);
-          });
-          workloadPanel.append(legend);
+          addChart(
+            "TOTAL WORKLOAD",
+            "SUM OF THE FIVE EXERCISE WORKING WEIGHTS · LB · LAST 12 WORKOUTS",
+            [{name:"TOTAL WORKLOAD",values:aggregate,color:workloadColors[5],width:3.5}],
+            50,100,Math.max(...aggregate),
+            "Per-workout total workload line chart in pounds"
+          );
+          addChart(
+            "INDIVIDUAL EXERCISES",
+            "WORKING WEIGHT PER EXERCISE · LB · LAST 12 WORKOUTS · 10 LB GRID",
+            workloadNames.map((name,index)=>({name,values:workoutPoints.map(([,values])=>values[index]),color:workloadColors[index],width:1.8})),
+            10,50,Math.max(10,...workloadNames.flatMap((name,index)=>workoutPoints.map(([,values])=>values[index]))),
+            "Per-workout individual exercise working-weight chart in pounds with 10 pound grid increments"
+          );
           const note=document.createElement("div");
           note.className="workload-note";
-          note.textContent="EACH EXERCISE LINE IS ITS WEEKLY AVERAGE LOGGED WORKING WEIGHT. TOTAL IS THE SUM OF THE FIVE EXERCISE AVERAGES. TIME IS NOT USED.";
+          note.textContent="WORKLOAD IS THE SUM OF THE FIVE LOGGED EXERCISE WEIGHTS. INDIVIDUAL EXERCISES USE 10 LB GRID LINES WITH LABELS EVERY 50 LB TO KEEP THE AXIS READABLE. EACH POINT REPRESENTS ONE WORKOUT DATE.";
           workloadPanel.append(note);
         }
         const workoutHistory = document.createElement("div");
