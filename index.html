@@ -2169,57 +2169,41 @@
         workloadPanel.className = "workload-panel";
         const workloadTitle = document.createElement("div");
         workloadTitle.className = "workload-title";
-        workloadTitle.textContent = "WEEKLY TRAINING WORKING WEIGHT";
+        workloadTitle.textContent = "WORKOUT WORKING WEIGHT";
         const workloadSubtitle = document.createElement("div");
         workloadSubtitle.className = "workload-subtitle";
-        workloadSubtitle.textContent = "TOTAL WORKING WEIGHT + INDIVIDUAL EXERCISE TRENDS · LB";
+        workloadSubtitle.textContent = "TOTAL + INDIVIDUAL EXERCISE TRENDS · LB · LAST 12 WORKOUTS";
         workloadPanel.append(workloadTitle,workloadSubtitle);
         const workloadNames = ["Chest Press","Row","Overhead Press","Lat Pulldown","Leg Press"];
         const workloadColors = ["#83d7ff","#f2b766","#a9a0ff","#75d6b1","#ff8f9b","#dceeff"];
-        const weeklyWeights = new Map();
-        Object.entries(taskData).forEach(([date,record]) => {
-          if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !record || !record.exerciseMetrics) return;
-          const metrics = record.exerciseMetrics;
-          const values = workloadNames.map(name => {
-            const weight = Number((metrics[name] || {}).weight);
+        // Per-workout chart: each date with recorded exercise weights contributes one point.
+        const workoutPoints = Object.entries(taskData)
+          .filter(([date,record]) => /^\d{4}-\d{2}-\d{2}$/.test(date) && record && record.exerciseMetrics)
+          .map(([date,record]) => [date,workloadNames.map(name => {
+            const weight = Number((record.exerciseMetrics[name] || {}).weight);
             return Number.isFinite(weight) && weight > 0 ? weight : 0;
-          });
-          if (!values.some(value => value > 0)) return;
-          const day = dateFromKey(date);
-          const monday = new Date(day);
-          monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
-          const weekKey = dateKey(monday);
-          if (!weeklyWeights.has(weekKey)) weeklyWeights.set(weekKey,workloadNames.map(() => ({sum:0,count:0})));
-          const totals = weeklyWeights.get(weekKey);
-          values.forEach((value,index) => {
-            if (value > 0) {
-              totals[index].sum += value;
-              totals[index].count++;
-            }
-          });
-        });
-        const workloadWeeks = [...weeklyWeights.entries()]
+          })])
+          .filter(([,values]) => values.some(value => value > 0))
           .sort((a,b) => a[0].localeCompare(b[0]))
-          .slice(-12)
-          .map(([week,entries]) => [week,entries.map(entry => entry.count ? entry.sum / entry.count : 0)]);
-        if (!workloadWeeks.length) {
+          .slice(-12);
+        if (!workoutPoints.length) {
           const empty = document.createElement("div");
           empty.className = "workload-empty";
-          empty.textContent = "NO WORKING WEIGHTS LOGGED YET. ENTER WEIGHT FOR EACH EXERCISE TO BUILD YOUR WEEKLY TREND.";
+          empty.textContent = "NO WORKING WEIGHTS LOGGED YET. ENTER WEIGHT FOR EACH EXERCISE AFTER EACH WORKOUT TO BUILD YOUR SESSION TREND.";
           workloadPanel.append(empty);
         } else {
-          const aggregate = workloadWeeks.map(([,values]) => values.reduce((sum,value) => sum + value,0));
-          const series = [{name:"TOTAL WORKING WEIGHT",values:aggregate,color:workloadColors[5],width:3.5},...workloadNames.map((name,index)=>({name,values:workloadWeeks.map(([,values])=>values[index]),color:workloadColors[index],width:1.8}))];
+          const aggregate = workoutPoints.map(([,values]) => values.reduce((sum,value) => sum + value,0));
+          const series = [{name:"TOTAL WORKING WEIGHT",values:aggregate,color:workloadColors[5],width:3.5},...workloadNames.map((name,index)=>({name,values:workoutPoints.map(([,values])=>values[index]),color:workloadColors[index],width:1.8}))];
           const svgNS = "http://www.w3.org/2000/svg";
           const svg = document.createElementNS(svgNS,"svg");
           svg.setAttribute("class","workload-chart");
           svg.setAttribute("viewBox","0 0 760 300");
           svg.setAttribute("role","img");
-          svg.setAttribute("aria-label","Weekly average working-weight line chart showing total working weight and each exercise in pounds");
+          svg.setAttribute("aria-label","Per-workout working-weight line chart showing total working weight and each exercise in pounds");
           const left=58,right=738,top=18,bottom=238;
           const maxValue=Math.max(1,...aggregate);
           const axisMax=Math.ceil(maxValue/250)*250 || 250;
-          const xAt=index => workloadWeeks.length===1 ? (left+right)/2 : left+index*(right-left)/(workloadWeeks.length-1);
+          const xAt=index => workoutPoints.length===1 ? (left+right)/2 : left+index*(right-left)/(workoutPoints.length-1);
           const yAt=value => bottom-(value/axisMax)*(bottom-top);
           const addSvg=(tag,attrs,textValue) => {
             const node=document.createElementNS(svgNS,tag);
@@ -2233,9 +2217,9 @@
             addSvg("text",{x:left-9,y:y+3,"text-anchor":"end",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},Math.round(value).toLocaleString());
           }
           addSvg("line",{x1:left,y1:bottom,x2:right,y2:bottom,stroke:"rgba(150,183,207,.3)","stroke-width":1});
-          workloadWeeks.forEach(([week],index)=>{
-            if(workloadWeeks.length>8 && index%2!==0 && index!==workloadWeeks.length-1) return;
-            const label=week.slice(5);
+          workoutPoints.forEach(([date],index)=>{
+            if(workoutPoints.length>8 && index%2!==0 && index!==workoutPoints.length-1) return;
+            const label=date.slice(5);
             addSvg("text",{x:xAt(index),y:bottom+20,"text-anchor":"middle",fill:"#a9bac9","font-size":13,"font-family":"IBM Plex Mono, monospace"},label);
           });
           series.forEach(item=>{
