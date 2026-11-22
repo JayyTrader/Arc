@@ -2178,7 +2178,7 @@
         const workloadColors = ["#83d7ff","#f2b766","#a9a0ff","#75d6b1","#ff8f9b","#dceeff"];
         // Per-workout chart: each date with recorded exercise weights contributes one point.
         const workoutPoints = Object.entries(taskData)
-          .filter(([date,record]) => /^\\d{4}-\\d{2}-\\d{2}$/.test(date) && record && record.exerciseMetrics)
+          .filter(([date,record]) => /^\d{4}-\d{2}-\d{2}$/.test(date) && record && record.exerciseMetrics)
           .map(([date,record]) => [date,workloadNames.map(name => {
             const weight = Number((record.exerciseMetrics[name] || {}).weight);
             return Number.isFinite(weight) && weight > 0 ? weight : 0;
@@ -2189,7 +2189,7 @@
         if (!workoutPoints.length) {
           const empty = document.createElement("div");
           empty.className = "workload-empty";
-          empty.textContent = "NO WORKING WEIGHTS LOGGED YET. ENTER WEIGHT FOR EACH EXERCISE TO BUILD YOUR WEEKLY TREND.";
+          empty.textContent = "NO WORKING WEIGHTS LOGGED YET. ENTER WEIGHT FOR EACH EXERCISE AFTER EACH WORKOUT TO BUILD YOUR SESSION TREND.";
           workloadPanel.append(empty);
         } else {
           const aggregate = workoutPoints.map(([,values]) => values.reduce((sum,value) => sum + value,0));
