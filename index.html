@@ -345,17 +345,18 @@
     .book-panel-top { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:17px 20px; border-bottom:1px solid rgba(174,204,231,.11); }
     .book-panel-top .panel-header { padding:0; border:0; }
     .book-count { color:#718da5; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; white-space:nowrap; }
-    .book-form { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto; gap:8px; padding:14px 20px 16px; border-bottom:1px solid rgba(174,204,231,.08); }
+    .book-form { display:grid; grid-template-columns:minmax(0,1fr) 130px auto; gap:8px; padding:14px 20px 16px; }
     .book-form input { min-width:0; width:100%; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:10px 12px; font:12px "Space Grotesk",sans-serif; color-scheme:dark; }
     .book-form button { border:1px solid rgba(169,215,255,.3); background:rgba(70,115,155,.12); color:#cfe6fb; padding:0 14px; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
     .book-list { display:flex; flex-direction:column; }
     .book-entry { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; padding:13px 20px; border-bottom:1px solid rgba(174,204,231,.08); }
     .book-entry:last-child { border-bottom:0; }
     .book-title { color:#dce8f4; font-size:13px; line-height:1.4; overflow-wrap:anywhere; }
-    .book-meta { margin-top:4px; color:#718397; font:9px/1.5 "IBM Plex Mono",monospace; letter-spacing:.06em; text-transform:uppercase; }
+    .book-rating { color:#a9d7ff; font:10px "IBM Plex Mono",monospace; letter-spacing:.08em; white-space:nowrap; }
+    .book-rating-input { width:74px; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:8px; font:11px "IBM Plex Mono",monospace; color-scheme:dark; }
     .book-remove { border:1px solid rgba(190,112,112,.35); background:transparent; color:#b98d8d; padding:7px 9px; font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
     .book-empty { padding:18px 20px; color:#6f8295; font:10px/1.6 "IBM Plex Mono",monospace; letter-spacing:.06em; }
-    @media(max-width:650px) { .book-form { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .book-form input:first-child { grid-column:1/-1; } .book-form button { grid-column:1/-1; min-height:38px; } }
+    @media(max-width:650px) { .book-form { grid-template-columns:minmax(0,1fr) 100px; } .book-form button { grid-column:1/-1; min-height:38px; } }
     .log-day { width:100%; margin-top:16px; padding:17px 20px; border:1px solid rgba(169,215,255,.42); background:linear-gradient(100deg,rgba(62,105,145,.2),rgba(12,20,29,.7)); color:#dceeff; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; cursor:pointer; transition:background .2s ease,border-color .2s ease; }
     .log-day:hover { border-color:rgba(197,228,255,.85); background:rgba(91,137,178,.2); }
     .log-status { min-height:16px; margin-top:10px; color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
@@ -1526,8 +1527,7 @@
         <div class="book-panel-top"><div class="panel-header">Completed Books</div><span class="book-count" id="bookCount">0 BOOKS</span></div>
         <form class="book-form" id="bookForm">
           <input id="bookTitleInput" type="text" maxlength="160" placeholder="Book title" aria-label="Book title" required />
-          <input id="bookAuthorInput" type="text" maxlength="120" placeholder="Author (optional)" aria-label="Book author" />
-          <input id="bookDateInput" type="date" aria-label="Date completed" required />
+          <input id="bookRatingInput" type="number" min="1" max="10" step="1" inputmode="numeric" placeholder="Rating / 10" aria-label="Book rating from 1 to 10" required />
           <button type="submit">Add book</button>
         </form>
         <div class="book-list" id="bookList" aria-live="polite"><div class="book-empty">Your completed reading will be recorded here.</div></div>
@@ -2557,26 +2557,29 @@
     const BOOKS_KEY = "winterArcCompletedBooksV1";
     const bookForm = document.getElementById("bookForm");
     const bookTitleInput = document.getElementById("bookTitleInput");
-    const bookAuthorInput = document.getElementById("bookAuthorInput");
-    const bookDateInput = document.getElementById("bookDateInput");
+    const bookRatingInput = document.getElementById("bookRatingInput");
     const bookList = document.getElementById("bookList");
     const bookCount = document.getElementById("bookCount");
     let completedBooks = [];
     try {
       const storedBooks = JSON.parse(localStorage.getItem(BOOKS_KEY) || "[]");
       if (Array.isArray(storedBooks)) completedBooks = storedBooks.filter(book =>
-        book && typeof book.id === "string" && typeof book.title === "string" &&
-        typeof book.author === "string" && /^\d{4}-\d{2}-\d{2}$/.test(book.date)
-      );
+        book && typeof book.id === "string" && typeof book.title === "string"
+      ).map(book => ({
+        id: book.id,
+        title: book.title,
+        rating: Number.isInteger(Number(book.rating)) && Number(book.rating) >= 1 && Number(book.rating) <= 10
+          ? Number(book.rating) : null,
+        sortDate: typeof book.date === "string" ? book.date : ""
+      }));
     } catch (error) { console.warn("Could not load completed books.", error); }
-    bookDateInput.value = localDateString();
     function saveCompletedBooks() {
       try { localStorage.setItem(BOOKS_KEY, JSON.stringify(completedBooks)); }
       catch (error) { console.warn("Could not save completed books in this browser.", error); }
     }
     function renderCompletedBooks() {
       bookList.replaceChildren();
-      completedBooks.sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+      completedBooks.sort((a,b) => (b.sortDate || "").localeCompare(a.sortDate || "") || b.id.localeCompare(a.id));
       bookCount.textContent = completedBooks.length + (completedBooks.length === 1 ? " BOOK" : " BOOKS");
       if (!completedBooks.length) {
         const empty = document.createElement("div");
@@ -2588,47 +2591,47 @@
       completedBooks.forEach(book => {
         const entry = document.createElement("div");
         entry.className = "book-entry";
-        const copy = document.createElement("div");
         const title = document.createElement("div");
         title.className = "book-title";
         title.textContent = book.title;
-        const meta = document.createElement("div");
-        meta.className = "book-meta";
-        const parts = [];
-        if (book.author) parts.push(book.author);
-        const [year,month,day] = book.date.split("-").map(Number);
-        parts.push("Finished " + new Date(year,month-1,day).toLocaleDateString());
-        meta.textContent = parts.join(" · ");
-        copy.append(title,meta);
-        const remove = document.createElement("button");
-        remove.className = "book-remove";
-        remove.type = "button";
-        remove.textContent = "Remove";
-        remove.setAttribute("aria-label","Remove " + book.title);
-        remove.addEventListener("click",() => {
-          completedBooks = completedBooks.filter(item => item.id !== book.id);
+        const rating = document.createElement("input");
+        rating.className = "book-rating-input";
+        rating.type = "number";
+        rating.min = "1";
+        rating.max = "10";
+        rating.step = "1";
+        rating.inputMode = "numeric";
+        rating.value = book.rating == null ? "" : String(book.rating);
+        rating.placeholder = "— / 10";
+        rating.setAttribute("aria-label","Rating for " + book.title + " from 1 to 10");
+        rating.addEventListener("change",() => {
+          const value = Number(rating.value);
+          if (!Number.isInteger(value) || value < 1 || value > 10) {
+            rating.value = book.rating == null ? "" : String(book.rating);
+            return;
+          }
+          book.rating = value;
           saveCompletedBooks();
           renderCompletedBooks();
         });
-        entry.append(copy,remove);
+        entry.append(title,rating);
         bookList.append(entry);
       });
     }
     bookForm.addEventListener("submit",event => {
       event.preventDefault();
       const title = bookTitleInput.value.trim();
-      const date = bookDateInput.value;
-      if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      const rating = Number(bookRatingInput.value);
+      if (!title || !Number.isInteger(rating) || rating < 1 || rating > 10) return;
       completedBooks.push({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2,8),
         title,
-        author: bookAuthorInput.value.trim(),
-        date
+        rating,
+        sortDate: new Date().toISOString()
       });
       saveCompletedBooks();
       renderCompletedBooks();
       bookForm.reset();
-      bookDateInput.value = localDateString();
       bookTitleInput.focus();
     });
     window.addEventListener("storage",event => {
