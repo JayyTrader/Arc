@@ -345,9 +345,10 @@
     .book-panel-top { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:17px 20px; border-bottom:1px solid rgba(174,204,231,.11); }
     .book-panel-top .panel-header { padding:0; border:0; }
     .book-count { color:#718da5; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; white-space:nowrap; }
-    .book-form { display:grid; grid-template-columns:minmax(0,1fr) 130px auto; gap:8px; padding:14px 20px 16px; }
-    .book-form input { min-width:0; width:100%; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:10px 12px; font:12px "Space Grotesk",sans-serif; color-scheme:dark; }
-    .book-form button { border:1px solid rgba(169,215,255,.3); background:rgba(70,115,155,.12); color:#cfe6fb; padding:0 14px; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+    .book-form { display:grid; grid-template-columns:minmax(0,1fr) 68px auto; gap:8px; padding:14px 20px 16px; }
+    .book-form input { box-sizing:border-box; min-width:0; width:100%; height:38px; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); border-radius:0; padding:9px 10px; font:12px "Space Grotesk",sans-serif; color-scheme:dark; }
+    .book-form #bookRatingInput { text-align:center; padding:8px 4px; font:11px "IBM Plex Mono",monospace; }
+    .book-form button { min-width:56px; border:1px solid rgba(169,215,255,.3); background:rgba(70,115,155,.12); color:#cfe6fb; padding:0 10px; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
     .book-list { display:flex; flex-direction:column; }
     .book-entry { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; padding:13px 20px; border-bottom:1px solid rgba(174,204,231,.08); }
     .book-entry:last-child { border-bottom:0; }
@@ -356,7 +357,7 @@
     .book-rating-input { width:74px; color:#dceeff; background:#070c12; border:1px solid rgba(169,215,255,.18); padding:8px; font:11px "IBM Plex Mono",monospace; color-scheme:dark; }
     .book-remove { border:1px solid rgba(190,112,112,.35); background:transparent; color:#b98d8d; padding:7px 9px; font:9px "IBM Plex Mono",monospace; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
     .book-empty { padding:18px 20px; color:#6f8295; font:10px/1.6 "IBM Plex Mono",monospace; letter-spacing:.06em; }
-    @media(max-width:650px) { .book-form { grid-template-columns:minmax(0,1fr) 100px; } .book-form button { grid-column:1/-1; min-height:38px; } }
+    @media(max-width:650px) { .book-form { grid-template-columns:minmax(0,1fr) 54px auto; gap:6px; padding:14px 20px 16px; } .book-form button { min-width:48px; min-height:38px; padding:0 7px; } .book-form input { height:38px; padding:8px; } .book-form #bookRatingInput { padding:7px 2px; } }
     .log-day { width:100%; margin-top:16px; padding:17px 20px; border:1px solid rgba(169,215,255,.42); background:linear-gradient(100deg,rgba(62,105,145,.2),rgba(12,20,29,.7)); color:#dceeff; font:10px "IBM Plex Mono",monospace; letter-spacing:.16em; text-transform:uppercase; cursor:pointer; transition:background .2s ease,border-color .2s ease; }
     .log-day:hover { border-color:rgba(197,228,255,.85); background:rgba(91,137,178,.2); }
     .log-status { min-height:16px; margin-top:10px; color:#7d95aa; font:9px "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
@@ -1527,7 +1528,7 @@
         <div class="book-panel-top"><div class="panel-header">Completed Books</div><span class="book-count" id="bookCount">0 BOOKS</span></div>
         <form class="book-form" id="bookForm">
           <input id="bookTitleInput" type="text" maxlength="160" placeholder="Book title" aria-label="Book title" required />
-          <input id="bookRatingInput" type="number" min="1" max="10" step="1" inputmode="numeric" placeholder="Rating / 10" aria-label="Book rating from 1 to 10" required />
+          <input id="bookRatingInput" type="number" min="1" max="10" step="1" inputmode="numeric" placeholder="1–10" aria-label="Book rating from 1 to 10" required />
           <button type="submit">Add book</button>
         </form>
         <div class="book-list" id="bookList" aria-live="polite"><div class="book-empty">Your completed reading will be recorded here.</div></div>
